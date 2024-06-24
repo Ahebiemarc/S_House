@@ -1,12 +1,14 @@
 import { SafeAreaView, Text, View } from "react-native"
 
 
-const Tips = () =>{
+const Inbox = () => {
     return(
         <SafeAreaView>
-            <Text>Tips</Text>
+            <Text>
+                Inbox
+            </Text>
         </SafeAreaView>
-    );
+    )
 }
 
-export default Tips;
+export default Inbox;

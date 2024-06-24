@@ -1,6 +1,6 @@
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { CompositeScreenProps, NavigatorScreenParams } from "@react-navigation/native"
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { StackScreenProps } from "@react-navigation/stack";
 
 // définition des paramètres de route possibles pour la pile racine de  l'application
 export type RootStackParamList = {
@@ -8,13 +8,13 @@ export type RootStackParamList = {
     splash: undefined;
     Onboarding: undefined;
     Login: undefined;
-    Signup: undefined;
-    Details: undefined;
+    Booking: undefined;
+    Listing: {id: string};
 
 }
 
 
-export type RootStackScreenProps<T extends keyof RootStackParamList> = NativeStackScreenProps<RootStackParamList, T>;
+export type RootStackScreenProps<T extends keyof RootStackParamList> = StackScreenProps<RootStackParamList, T>;
 
 export type TabStackParamList = {
     Tips: undefined;
@@ -25,7 +25,7 @@ export type TabStackParamList = {
 }
 
 
-export type TabScreenProps<T extends keyof TabStackParamList> = CompositeScreenProps<BottomTabScreenProps<TabStackParamList, T>, RootStackScreenProps<keyof RootStackParamList>>
+export type TabStackScreenProps<T extends keyof TabStackParamList> = CompositeScreenProps<BottomTabScreenProps<TabStackParamList, T>, RootStackScreenProps<keyof RootStackParamList>>
 
 
 declare global {
