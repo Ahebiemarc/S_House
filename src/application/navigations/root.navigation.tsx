@@ -1,6 +1,6 @@
 
 import { createStackNavigator, TransitionPresets } from "@react-navigation/stack";
-import { RootStackParamList, RootStackScreenProps } from "../../domain/types/route.types";
+import { RootStackParamList, RootStackScreenProps, TabStackScreenProps } from "../../domain/types/route.types";
 import { View, Dimensions, TouchableOpacity } from "react-native";
 import TabNavigator from "./Tab.navigation";
 import Login from "../../presentation/screens/modals/Login.screen";
@@ -11,7 +11,7 @@ import { useRoute } from "@react-navigation/native";
 
 const {height, width} = Dimensions.get('window');
 
-
+type Props = TabStackScreenProps<'Explore'>
 const RootStack = createStackNavigator<RootStackParamList>()
 
 const RootNavigator = () => {
@@ -23,7 +23,7 @@ const RootNavigator = () => {
                     <RootStack.Screen name="Tab" component={TabNavigator} />
                 </RootStack.Group>
                 <RootStack.Group 
-                    screenOptions={{
+                    screenOptions={({navigation}) => ({
                         presentation: 'modal', 
                         headerShown: true,
                         headerStyle:{
@@ -33,12 +33,11 @@ const RootNavigator = () => {
                         gestureEnabled: true,
                         ...TransitionPresets.ModalPresentationIOS,
                         headerLeft: () =>(
-                            <TouchableOpacity activeOpacity={0.7} style={{marginLeft: 10}} onPress={() => router}>
+                            <TouchableOpacity activeOpacity={0.7} style={{marginLeft: 10}} onPress={() => navigation.goBack()}>
                                 <Ionicons name="close-outline" size={35} />
                             </TouchableOpacity>
                         )
-                        
-                    }}
+                    })}
                 >
                     <RootStack.Screen name="Login" component={Login}
                         options={{
