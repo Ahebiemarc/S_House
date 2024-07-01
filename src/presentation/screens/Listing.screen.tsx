@@ -1,5 +1,5 @@
 import { SafeAreaView, Text, View } from "react-native"
-import { RootStackScreenProps } from "../../../../domain/types/route.types";
+import { RootStackScreenProps } from "../../domain/types/route.types";
 import React from "react";
 
 type Props = RootStackScreenProps<'Listing'>

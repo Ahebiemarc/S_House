@@ -9,11 +9,11 @@ const Explore: React.FC<Props> = ({navigation}) => {
             <TouchableOpacity onPress={() => navigation.navigate('Login')}>
                 <Text>Login</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Booking')}>
                 <Text>Booking</Text>
             </TouchableOpacity>   
             <TouchableOpacity onPress={() => navigation.navigate('Listing', {id: '1337'})}>
-                <Text>Booking</Text>
+                <Text>Listing</Text>
             </TouchableOpacity>          
         </SafeAreaView>
     )
