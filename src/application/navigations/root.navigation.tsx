@@ -3,8 +3,8 @@ import { createStackNavigator, TransitionPresets } from "@react-navigation/stack
 import { RootStackParamList, RootStackScreenProps, TabStackScreenProps } from "../../domain/types/route.types";
 import { View, Dimensions, TouchableOpacity } from "react-native";
 import TabNavigator from "./Tab.navigation";
-import Login from "../../presentation/screens/modals/Login.screen";
-import Booking from "../../presentation/screens/modals/Booking.screen";
+import Login from "../../presentation/screens/modals/Login.modal";
+import Booking from "../../presentation/screens/modals/Booking.modal";
 import Listing from "../../presentation/screens/Listing.screen";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useRoute } from "@react-navigation/native";
