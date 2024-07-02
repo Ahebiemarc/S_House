@@ -2,7 +2,6 @@ import { SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } fro
 import { defaultStyles } from "../../../application/utils/constants/Styles";
 import Colors from "../../../application/utils/constants/Color";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
 
 

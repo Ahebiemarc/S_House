@@ -63,7 +63,7 @@ const RootNavigator = () => {
                         headerStyle:{
                             backgroundColor: 'transparent',
                         },
-                        //headerTintColor: 'white',
+                        //headerTintColor: 'transparent',
                         gestureEnabled: true,
                         ...TransitionPresets.ModalPresentationIOS,
                         headerLeft: () =>(
