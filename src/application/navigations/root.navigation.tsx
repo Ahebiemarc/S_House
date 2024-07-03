@@ -17,9 +17,9 @@ const RootNavigator = () => {
     return(
         <View style={{flex: 1}}>
             <RootStack.Navigator initialRouteName="Tab">
-                <RootStack.Group screenOptions={{headerShown: false}}>
-                    <RootStack.Screen name="Tab" component={TabNavigator} />
-                    <RootStack.Screen name="Listing" component={Listing}/>
+                <RootStack.Group>
+                    <RootStack.Screen name="Tab" component={TabNavigator} options={{headerShown: false}} />
+                    <RootStack.Screen name="Listing" component={Listing} options={{headerTitle: '', headerTransparent: true}}/>
                 </RootStack.Group>
                 <RootStack.Group 
                     screenOptions={({navigation}) => ({
