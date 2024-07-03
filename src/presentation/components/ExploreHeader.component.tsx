@@ -53,6 +53,7 @@ const ExploreHeader:React.FC<Props> = ({onCategoryChanged}) => {
   const scrollRef = useRef<ScrollView>(null);
   const itemsRef = useRef<Array<TouchableOpacity | null>>([]);
   const [activeIndex, setActiveIndex] = useState(0);
+
   const navigation = useNavigation<ExploreHeaderNavigationProp>();
 
   const selectCategory = (index: number) => {
@@ -66,7 +67,7 @@ const ExploreHeader:React.FC<Props> = ({onCategoryChanged}) => {
   };
 
   return(
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+    <SafeAreaView style={{ backgroundColor: '#fff' }}>
     <View style={styles.container}>
       <View style={styles.actionRow}>
         <TouchableOpacity onPress={() => navigation.navigate('Booking')}>
@@ -101,7 +102,7 @@ const ExploreHeader:React.FC<Props> = ({onCategoryChanged}) => {
             >
             <MaterialIcons
               name={item.icon as any}
-              size={24}
+              size={30}
               color={activeIndex === index ? '#000' : Colors.grey}
             />
             <Text style={activeIndex === index ? styles.categoryTextActive : styles.categoryText}>

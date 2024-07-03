@@ -9,7 +9,7 @@ export type RootStackParamList = {
     Onboarding: undefined;
     Login: undefined;
     Booking: undefined;
-    Listing: {id: string};
+    Listing: {item: any};
 
 }
 
