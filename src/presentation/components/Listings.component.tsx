@@ -43,7 +43,7 @@ const Listings: React.FC<Props> = ({listings: items, category}) => {
         onPress={() => navigation.navigate('Listing', {item})}
         >
             <Animated.View style={styles.listing} entering={FadeInRight} exiting={FadeOutLeft}>
-                <Image source={{uri: item.medium_url}} style={styles.image} 
+                <Animated.Image source={{uri: item.medium_url}} style={styles.image} 
                 onError={() => handleImageError(item)}
                 />
                 <TouchableOpacity style={{position: 'absolute', right: 30, top: 30, backgroundColor: "#fff", borderRadius: 30 ,padding: 5}}>
