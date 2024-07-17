@@ -24,6 +24,7 @@ const Listings: React.FC<Props> = ({listings: items, category}) => {
     const navigation = useNavigation<ExploreHeaderNavigationProp>();
 
 
+
     useEffect(() => {
         console.log("Reloading Listings");
         setLoading(true);

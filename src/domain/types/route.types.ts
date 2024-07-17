@@ -10,6 +10,7 @@ export type RootStackParamList = {
     Login: undefined;
     Booking: undefined;
     Listing: {item: any};
+    Map: {item: any};
 
 }
 

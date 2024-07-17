@@ -8,6 +8,7 @@ import Booking from "../../presentation/screens/modals/Booking.modal";
 import Listing from "../../presentation/screens/Listing.screen";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useRoute } from "@react-navigation/native";
+import ListingsMaps from "../../presentation/screens/ListingsMaps.screen";
 
 const {height, width} = Dimensions.get('window');
 
@@ -44,6 +45,20 @@ const RootNavigator = () => {
                             headerTitleStyle: {
                                 textAlign: 'center',
                                 marginLeft: width * 0.11,
+                                fontFamily: 'Poppins-Medium',
+                                fontSize: 18
+                            }
+
+                        }}
+                        
+                    />
+
+                    <RootStack.Screen name="Map" component={ListingsMaps}
+                        options={{
+                            headerTitle: 'Map location',
+                            headerTitleStyle: {
+                                textAlign: 'center',
+                                marginLeft: width * 0.23,
                                 fontFamily: 'Poppins-Medium',
                                 fontSize: 18
                             }

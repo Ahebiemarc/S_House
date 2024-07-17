@@ -13,6 +13,7 @@ import {
   Colors,
 } from 'react-native/Libraries/NewAppScreen';
 import RootNavigator from './src/application/navigations/Root.navigation';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 
 
@@ -24,7 +25,7 @@ function App(): React.JSX.Element {
   };
 
   return (
-    <SafeAreaView style={[backgroundStyle, {flex:1}]}>
+    <GestureHandlerRootView style={[backgroundStyle, {flex:1}]}>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
@@ -35,7 +36,7 @@ function App(): React.JSX.Element {
             <RootNavigator />
       </NavigationContainer>
       
-    </SafeAreaView>
+    </GestureHandlerRootView>
   );
 }
 
