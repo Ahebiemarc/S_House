@@ -15,6 +15,7 @@ const Explore: React.FC<Props> = ({navigation}) => {
 
     const [category, setCategory] = useState('Tiny homes');
     const items = useMemo(() => listingsData as any, []);
+    const geoItems = useMemo(() => listingsDataGeo as any, []);
 
     const onDataChanged = (category :string) => {
         console.log("CHANGE category: " + category);
@@ -28,7 +29,7 @@ const Explore: React.FC<Props> = ({navigation}) => {
             <ExploreHeader onCategoryChanged={onDataChanged}  />
             <Listings listings={items} category={category} /> 
             <View style={styles.absoluteView}>
-                <TouchableOpacity onPress={() => navigation.navigate('Map', {item: listingsDataGeo as any})} style={styles.btn}>
+                <TouchableOpacity onPress={() => navigation.navigate('Map', {item: geoItems})} style={styles.btn}>
                 <Text style={{ fontFamily: 'Poppins-SemiBold', color: '#fff' }}>Map</Text>
                 <Ionicons name="map" size={20} style={{ marginLeft: 10 }} color={'#fff'} />
                 </TouchableOpacity>

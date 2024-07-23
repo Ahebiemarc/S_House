@@ -18,10 +18,10 @@ const Button: React.FC<Props> = ({title, onPress}) => {
 const styles = StyleSheet.create({
     button: {
         padding: 10,
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.primary,
         borderRadius: 5,
         //color: 'white',
-        width: 200,
+        width: 120,
         margin: 8,
     },
     title:{
