@@ -11,6 +11,25 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
+type IconNamesM = keyof typeof MaterialCommunityIcons;
+
+type IconNamesI = keyof typeof Ionicons;
+
+type TabItem = {
+    icon: IconNamesM | IconNamesI
+    label: string;
+    onChange: (index: number) => void;
+    activeColor?: string;
+    inactiveColor?: string;
+    activeBackground?: string;
+    inactiveBackground?: string;
+    
+}
+
+type TabsProps = {
+    data: TabItem[];
+    selectedIndex: number;
+}
 
 const Tabs =  createBottomTabNavigator<TabStackParamList>()
 

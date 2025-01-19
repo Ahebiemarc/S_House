@@ -1,10 +1,12 @@
-import {Image, ImageProps, ImageSourcePropType, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
-import Button from "../../components/Button.component";
+import {Button, Image, ImageProps, ImageSourcePropType, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import * as Btn  from "../../components/Button.component";
 import { TabStackScreenProps } from "../../../domain/types/route.types";
 import React, { useEffect, useState } from "react";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { defaultStyles } from "../../../application/utils/constants/Styles";
 import Colors from "../../../application/utils/constants/Color";
+import AddBtnListing from "../../components/AddBtnListing.component";
+import { images } from "../../../application/utils/constants/assets";
 
 
 type Props = TabStackScreenProps<'Profile'>
@@ -13,9 +15,10 @@ const Profile: React.FC<Props> = ({navigation}) => {
     const [username, setUesername] = useState<string>('Ahebié Markus');
     const [email, setEmail] = useState<string>('ahebiemarc22@gmail.com');
     const [photo, setPhoto] = useState<ImageProps>(require('../../../presentation/assets/images/4.jpg'));
-    const [listPost, setListPost] = useState<Array<{}>>([]);
+    const [listPost, setListPost] = useState<Array<any>>(images);
 
     const [edit, setEdit] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         // Fetch user data
@@ -80,8 +83,20 @@ const Profile: React.FC<Props> = ({navigation}) => {
                 </View>
             )}
 
-            <Button title="Sign In" onPress={()=> navigation.navigate('Login')} />
-            <Button title="Sign Out" />
+            <View style={{
+                alignItems: 'center',
+            }}>
+                {/*<Btn.Button title="Sign In" onPress={()=> navigation.navigate('Login')} />*/}
+                <Btn.Button title="Sign Out" />
+            </View>
+
+            <View style={{justifyContent: 'center', padding: 20,}}>
+                <AddBtnListing data={images} />
+                <TouchableOpacity style={{flexDirection:'row', alignSelf: 'center', marginVertical: 20}}>
+                    <Text style={{fontFamily: 'Poppins-SemiBold', fontSize:18, color: Colors.primary ,marginHorizontal: 5}}>Add news</Text>
+                    <Ionicons name="add" size={24} color={Colors.primary} />
+                </TouchableOpacity>
+            </View>
 
         </SafeAreaView>
     )

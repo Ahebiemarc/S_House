@@ -7,16 +7,27 @@ import Login from "../../presentation/screens/modals/Login.modal";
 import Booking from "../../presentation/screens/modals/Booking.modal";
 import Listing from "../../presentation/screens/Listing.screen";
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useRoute } from "@react-navigation/native";
 import ListingsMaps from "../../presentation/screens/ListingsMaps.screen";
+import { createSharedElementStackNavigator } from 'react-navigation-shared-element';
 
 const {height, width} = Dimensions.get('window');
 
-const RootStack = createStackNavigator<RootStackParamList>()
+
+const Stack = createSharedElementStackNavigator<RootStackParamList>();
+
+
+const namesRoute = [
+    'Tab',
+    'Login',
+    'Map',
+    'Booking',
+] 
+
+
+const RootStack = createStackNavigator<RootStackParamList>();
 
 const RootNavigator = () => {
     return(
-        <View style={{flex: 1}}>
             <RootStack.Navigator initialRouteName="Tab">
                 <RootStack.Group>
                     <RootStack.Screen name="Tab" component={TabNavigator} options={{headerShown: false}} />
@@ -40,11 +51,12 @@ const RootNavigator = () => {
                     })}
                 >
                     <RootStack.Screen name="Login" component={Login}
+                    
                         options={{
-                            headerTitle: 'S\'inscrire ou se connecter',
+                            headerTitle: 'Se connecter',
                             headerTitleStyle: {
                                 textAlign: 'center',
-                                marginLeft: width * 0.11,
+                                marginLeft: width * 0.2,
                                 fontFamily: 'Poppins-Medium',
                                 fontSize: 18
                             }
@@ -102,7 +114,6 @@ const RootNavigator = () => {
                     />
                 </RootStack.Group>
             </RootStack.Navigator>
-        </View>
     )
 }
 

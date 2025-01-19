@@ -7,7 +7,7 @@ type Props = {
     title: string,
     onPress?: () => void
 }
-const Button: React.FC<Props> = ({title, onPress}) => {
+export const Button: React.FC<Props> = ({title, onPress}) => {
     return (
         <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={onPress}>
             <Text style={styles.title}> {title} </Text>
@@ -32,5 +32,3 @@ const styles = StyleSheet.create({
 
     }
 })
-
-export default Button;
