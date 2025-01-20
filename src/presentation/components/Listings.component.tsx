@@ -15,6 +15,33 @@ interface Props {
 
 type ExploreHeaderNavigationProp = StackNavigationProp<RootStackParamList, 'Tab'>;
 
+
+const formatText = (text: string) =>{
+    const maxLength = 35;
+    let formatted = '';
+    let index = 0;
+
+    while (index < text.length) {
+        // Découpe une section de la chaine
+        let chunk = text.slice(index, index + maxLength);
+
+        if (chunk.length === maxLength && /[a-zA-Z]/.test(chunk[maxLength - 1])) {
+            // Ajoute un tiret si le dernier caractère est une lettre
+            chunk += '-';
+          }
+      
+        // Ajoute le segment formaté au résultat avec un retour à la ligne
+        formatted += chunk + '\n';
+    
+        // Passe à la prochaine section
+        index += maxLength;
+    }
+
+    return formatted.trim(); // Supprime les espaces ou retours en trop à la fin
+
+
+}
+
 const Listings: React.FC<Props> = ({listings: items, category}) => {
 
     const [loading, setLoading] = useState(false);
@@ -51,7 +78,7 @@ const Listings: React.FC<Props> = ({listings: items, category}) => {
                     <Ionicons name="heart-outline" size={24} color="#000"/>
                 </TouchableOpacity>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <Text style={{fontSize:16, fontFamily: 'Poppins-Bold'}}>{item.name}</Text>
+                    <Text style={{fontSize:16, fontFamily: 'Poppins-Bold'}}>{formatText(item.name)}</Text>
                     <View style={{ flexDirection: 'row', gap: 4,  }}>
                         <Ionicons name="star" size={16} style={{marginTop: 1}} />
                         <Text style={{fontFamily: 'Poppins-Bold',}}> {item.review_scores_rating / 20} </Text>

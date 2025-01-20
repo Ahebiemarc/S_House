@@ -52,7 +52,7 @@ const Profile: React.FC<Props> = ({navigation}) => {
                         <Image source={photo} style={styles.avatar} />
                     </TouchableOpacity>
                     <View style={{flexDirection: 'row', gap:6}}>
-                        {edit ? (
+                        {/*edit ? (
                             <View style={styles.editRow}>
                                 <TextInput
                                     placeholder="First Name"
@@ -70,32 +70,42 @@ const Profile: React.FC<Props> = ({navigation}) => {
                                         <Ionicons name="checkmark-outline" size={24} color={Colors.dark} />
                                 </TouchableOpacity>
                             </View>
-                        ) : (
+                        ) : */}
                             <View style={styles.editRow}>
                                 <Text style={{fontFamily:'Poppins-Bold', fontSize:22}}>{username}</Text>
                                 <TouchableOpacity onPress={()=> setEdit(true)}>
                                     <Ionicons name="create-outline" size={24} color={Colors.dark} />
                                 </TouchableOpacity>
                             </View>
-                        )}
+                        
                     </View>
                     <Text style={{fontFamily:'Poppins-Regular', fontSize:16, color:Colors.grey}}>{email}</Text>
                 </View>
             )}
 
-            <View style={{
-                alignItems: 'center',
-            }}>
-                {/*<Btn.Button title="Sign In" onPress={()=> navigation.navigate('Login')} />*/}
-                <Btn.Button title="Sign Out" />
-            </View>
+            
 
             <View style={{justifyContent: 'center', padding: 20,}}>
-                <AddBtnListing data={images} />
-                <TouchableOpacity style={{flexDirection:'row', alignSelf: 'center', marginVertical: 20}}>
+                <AddBtnListing data={listPost} />
+                <TouchableOpacity style={{flexDirection:'row', alignSelf: 'flex-end', marginVertical: 20, justifyContent: 'center',}}>
                     <Text style={{fontFamily: 'Poppins-SemiBold', fontSize:18, color: Colors.primary ,marginHorizontal: 5}}>Add news</Text>
                     <Ionicons name="add" size={24} color={Colors.primary} />
                 </TouchableOpacity>
+                <TouchableOpacity style={{flexDirection:'row', alignSelf: 'flex-end', marginVertical: 0, justifyContent: 'center', }}>
+                    <Text style={{fontFamily: 'Poppins-SemiBold', fontSize:18, color: Colors.primary, marginHorizontal: 5,textAlign: 'center' }}>View more</Text>
+                    <Ionicons name="eye" size={24} color={Colors.primary} />
+                </TouchableOpacity>
+            </View>
+            <View style={{
+                alignItems: 'center',
+                position: 'absolute',
+                bottom:20,
+                left:0,
+                right:0,
+                //backgroundColor: '#000'
+            }}>
+                {/*<Btn.Button title="Sign In" onPress={()=> navigation.navigate('Login')} />*/}
+                <Btn.Button title="Sign Out" />
             </View>
 
         </SafeAreaView>
