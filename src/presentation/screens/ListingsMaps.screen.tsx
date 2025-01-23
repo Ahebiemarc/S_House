@@ -114,7 +114,7 @@ const ListingsMaps = () => {
           <View style={styles.marker}>
             <Text
               style={{
-                color: '#000',
+                color: '#fff',
                 textAlign: 'center',
                 fontFamily: 'mon-sb',
               }}>
@@ -142,8 +142,8 @@ const ListingsMaps = () => {
                 //scrollEnabled={true}  // Permet le panning
                 //pitchEnabled={true}  // Permet de changer l'angle de vue
                 //rotateEnabled={true}
-                clusterColor="#fff" 
-                clusterTextColor="#000"
+                clusterColor="rgba(255, 56, 92, 0.7)" 
+                clusterTextColor="#fff"
                 clusterFontFamily="Popins-Bold"
                 renderCluster={renderCluster}
             >
@@ -156,7 +156,7 @@ const ListingsMaps = () => {
                         longitude: +item.properties.longitude,
                     }} >
                       <View style={styles.marker}>
-                        <Text style={styles.markerText}>€ {item.properties.price}</Text>
+                        <Text style={styles.markerText}>DT {item.properties.price}</Text>
                       </View>
                     </Marker>
                 ))}
@@ -175,7 +175,8 @@ const styles = StyleSheet.create({
       padding: 8,
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#fff',
+      backgroundColor: 'rgba(255, 56, 92, 0.7)',
+      color: "#fff",
       elevation: 5,
       borderRadius: 12,
       shadowColor: '#000',
@@ -189,6 +190,7 @@ const styles = StyleSheet.create({
     markerText: {
       fontSize: 14,
       fontFamily: 'Poppins-Bold',
+      color: '#fff',
     },
 });
 

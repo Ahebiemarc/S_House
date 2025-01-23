@@ -6,6 +6,7 @@ import { RootStackParamList } from "../../domain/types/route.types";
 import { useNavigation } from "@react-navigation/native";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated";
+import { formatText } from "../../application/utils/functions/functions";
 
 
 interface Props {
@@ -16,31 +17,7 @@ interface Props {
 type ExploreHeaderNavigationProp = StackNavigationProp<RootStackParamList, 'Tab'>;
 
 
-const formatText = (text: string) =>{
-    const maxLength = 35;
-    let formatted = '';
-    let index = 0;
 
-    while (index < text.length) {
-        // Découpe une section de la chaine
-        let chunk = text.slice(index, index + maxLength);
-
-        if (chunk.length === maxLength && /[a-zA-Z]/.test(chunk[maxLength - 1])) {
-            // Ajoute un tiret si le dernier caractère est une lettre
-            chunk += '-';
-          }
-      
-        // Ajoute le segment formaté au résultat avec un retour à la ligne
-        formatted += chunk + '\n';
-    
-        // Passe à la prochaine section
-        index += maxLength;
-    }
-
-    return formatted.trim(); // Supprime les espaces ou retours en trop à la fin
-
-
-}
 
 const Listings: React.FC<Props> = ({listings: items, category}) => {
 
@@ -86,7 +63,7 @@ const Listings: React.FC<Props> = ({listings: items, category}) => {
                 </View>
                 <Text style={{ fontFamily: 'Poppins-Medium' }}>{item.room_type}</Text>
                 <View style={{ flexDirection: 'row', gap: 4 }}>
-                    <Text style={{ fontFamily: 'Poppins-Bold' }}>€ {item.price}</Text>
+                    <Text style={{ fontFamily: 'Poppins-Bold' }}>DT {item.price}</Text>
                     <Text style={{ fontFamily: 'Poppins-Medium' }}>Month</Text>
                 </View>
             </Animated.View>

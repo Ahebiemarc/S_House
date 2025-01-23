@@ -1,12 +1,18 @@
 import {Button, Image, ImageProps, ImageSourcePropType, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import * as Btn  from "../../components/Button.component";
 import { TabStackScreenProps } from "../../../domain/types/route.types";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { defaultStyles } from "../../../application/utils/constants/Styles";
 import Colors from "../../../application/utils/constants/Color";
 import AddBtnListing from "../../components/AddBtnListing.component";
 import { images } from "../../../application/utils/constants/assets";
+import BottomSheet from "@gorhom/bottom-sheet";
+import ApartmentListItems from "../../components/AppartmentListItems.component";
+
+import listingsData from '../../assets/data/airbnb-listings.json';
+
 
 
 type Props = TabStackScreenProps<'Profile'>
@@ -17,8 +23,13 @@ const Profile: React.FC<Props> = ({navigation}) => {
     const [photo, setPhoto] = useState<ImageProps>(require('../../../presentation/assets/images/4.jpg'));
     const [listPost, setListPost] = useState<Array<any>>(images);
 
+    const items = useMemo(() => listingsData as any, []);    
+
+
     const [edit, setEdit] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState(false);
+
+    const snapPoints = useMemo(() => ['25%', '50%', '90%'], []);
 
     useEffect(() => {
         // Fetch user data
@@ -27,6 +38,7 @@ const Profile: React.FC<Props> = ({navigation}) => {
         setEmail(email);
         setListPost(listPost);
     }, [username, email, listPost ]);
+
 
     const onSaveUser = async () =>{
         setEdit(false);
@@ -92,21 +104,33 @@ const Profile: React.FC<Props> = ({navigation}) => {
                     <Ionicons name="add" size={24} color={Colors.primary} />
                 </TouchableOpacity>
                 <TouchableOpacity style={{flexDirection:'row', alignSelf: 'flex-end', marginVertical: 0, justifyContent: 'center', }}>
-                    <Text style={{fontFamily: 'Poppins-SemiBold', fontSize:18, color: Colors.primary, marginHorizontal: 5,textAlign: 'center' }}>View more</Text>
-                    <Ionicons name="eye" size={24} color={Colors.primary} />
+                    <Text style={{fontFamily: 'Poppins-SemiBold', fontSize:18, color: Colors.primary, marginHorizontal: 5,textAlign: 'center' }}>Sign out</Text>
+                    <MaterialCommunityIcons name="logout" size={24} color={Colors.primary} />
                 </TouchableOpacity>
             </View>
-            <View style={{
+            {/*<View style={{
                 alignItems: 'center',
                 position: 'absolute',
-                bottom:20,
+                bottom:120,
                 left:0,
                 right:0,
                 //backgroundColor: '#000'
             }}>
-                {/*<Btn.Button title="Sign In" onPress={()=> navigation.navigate('Login')} />*/}
+                <Btn.Button title="Sign In" onPress={()=> navigation.navigate('Login')} />
                 <Btn.Button title="Sign Out" />
-            </View>
+            </View>*/}
+
+            <BottomSheet
+            index={0}
+            snapPoints={snapPoints}
+            //onChange={handleSheetChanges}
+             >
+                <View style={styles.contentContainer}>
+                    <Text style={styles.listTitle}>{items.length + 1} apartments</Text>
+                    <ApartmentListItems listings={items} />
+                    
+                </View>
+            </BottomSheet>
 
         </SafeAreaView>
     )
@@ -142,21 +166,31 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 14,
         marginBottom: 24,
-      },
+    },
 
-      avatar: {
+    avatar: {
         width: 100,
         height: 100,
         borderRadius: 50,
         backgroundColor: Colors.grey,
-      },
-      editRow: {
+    },
+    editRow: {
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         gap: 8,
-      },
+    },
+    contentContainer: {
+        flex: 1,
+    },
+    listTitle: {
+        textAlign: 'center',
+        fontFamily: 'Poppins-SemiBold',
+        fontSize: 16,
+        marginVertical: 5,
+        marginBottom: 15,
+    },
 })
 
 export default Profile;

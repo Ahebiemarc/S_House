@@ -8,6 +8,10 @@ export type RootStackParamList = {
     splash: undefined;
     Onboarding: undefined;
     Login: undefined;
+    Signup: undefined;
+    EditProfile: undefined;
+    EditApartment: undefined;
+    MyApartmentList: undefined;
     Booking: undefined;
     Listing: {item: any};
     Map: {item: any};
