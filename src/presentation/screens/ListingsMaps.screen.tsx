@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, PermissionsAndroid, Platform, StyleSheet, View, Text } from "react-native";
+import { ActivityIndicator, Alert, PermissionsAndroid, Platform, StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { Marker, PROVIDER_GOOGLE, Region } from "react-native-maps";
 import { defaultStyles } from "../../application/utils/constants/Styles";
 import Geolocation from "@react-native-community/geolocation";
@@ -8,6 +8,7 @@ import { RootStackParamList } from "../../domain/types/route.types";
 import { useNavigation } from "@react-navigation/native";
 import MapView from "react-native-map-clustering";
 import listingsDataGeo from '../assets/data/airbnb-listings.geo.json'
+import ApartmentItem from "../components/ApartmentItem.component";
 
 
 
@@ -37,8 +38,20 @@ const ListingsMaps = () => {
     const [location, setLocation] = useState<Region>();
     const [loading, setLoading] = useState(true);
 
+    const [selectedApartment, setSelectedApartment] = useState(null);
+
+
     const navigation = useNavigation<ExploreHeaderNavigationProp>();
     const listings: any = listingsDataGeo;
+    
+
+    // Vérifiez si features est un tableau
+    if (!listings.features || !Array.isArray(listings.features)) {
+      console.error('Le fichier JSON ne contient pas un tableau de features.');
+      return null; // Ou gérez l'erreur comme il convient
+    }
+
+
 
 
     const onMarkerSelected = ( item: any) => {
@@ -114,9 +127,9 @@ const ListingsMaps = () => {
           <View style={styles.marker}>
             <Text
               style={{
-                color: '#fff',
+                color: '#000',
                 textAlign: 'center',
-                fontFamily: 'mon-sb',
+                fontFamily: 'Poppins-SemiBold',
               }}>
               {points}
             </Text>
@@ -150,7 +163,8 @@ const ListingsMaps = () => {
                 {listings.features.map((item:any) => (
                     <Marker 
                       key={item.properties.id}
-                      onPress={() => onMarkerSelected(item)}
+                      //onPress={() => onMarkerSelected(item)}
+                      onPress={() => setSelectedApartment(item)}
                       coordinate={{
                         latitude: +item.properties.latitude,
                         longitude: +item.properties.longitude,
@@ -163,6 +177,17 @@ const ListingsMaps = () => {
             </MapView>
             )
         }
+        {/* display seleted Apartment */}
+        { selectedApartment && 
+          <ApartmentItem Onpress={() => onMarkerSelected(selectedApartment)} listing={selectedApartment} containerStyle={{
+          position: 'absolute',
+          bottom: 70,
+          padding: 10,
+          right: 10,
+          left: 10,
+        }} />
+        }
+       
         </View>
     );
 };
@@ -173,12 +198,15 @@ const styles = StyleSheet.create({
     },
     marker: {
       padding: 8,
+      paddingHorizontal: 15,
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: 'rgba(255, 56, 92, 0.7)',
+      backgroundColor: '#fff',
       color: "#fff",
       elevation: 5,
       borderRadius: 12,
+      borderWidth: 1,
+      borderColor: '#fff',
       shadowColor: '#000',
       shadowOpacity: 0.1,
       shadowRadius: 6,
@@ -190,7 +218,8 @@ const styles = StyleSheet.create({
     markerText: {
       fontSize: 14,
       fontFamily: 'Poppins-Bold',
-      color: '#fff',
+      color: '#000',
+      textAlign: 'center',
     },
 });
 

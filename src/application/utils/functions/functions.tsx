@@ -26,11 +26,15 @@ export const formatText = (text: string) =>{
 
 }
 
-export const truncateText = (input: string, maxLength: number): string => {
-    if (input.length > maxLength) {
+export const truncateText = (input: string | undefined, maxLength: number): string => {
+  if (!input) {
+      return ''; // Retournez une chaîne vide si `input` est indéfini ou null
+  }
+  if (input.length > maxLength) {
       return input.slice(0, maxLength) + '...';
-    }
-    return input;
+  }
+  return input;
 };
+
 
   

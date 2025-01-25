@@ -15,7 +15,10 @@ type Props = RootStackScreenProps<'Listing'>
 const Listing:React.FC<Props> = ({route, navigation}) => {
 
     const { item } = route.params;
-    //console.log(item);
+    console.log(item);
+    console.log("00000000000000000000");
+    
+
     const scrollRef = useAnimatedRef<Animated.ScrollView>();
 
     const scrollOffset = useScrollViewOffset(scrollRef);

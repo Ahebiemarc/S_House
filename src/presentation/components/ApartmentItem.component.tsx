@@ -1,4 +1,4 @@
-import { Image } from "react-native";
+import { Image, TouchableOpacity, ViewStyle } from "react-native";
 import { StyleSheet, Text, View } from "react-native";
 import { truncateText } from "../../application/utils/functions/functions";
 
@@ -6,22 +6,34 @@ import { truncateText } from "../../application/utils/functions/functions";
 
 type Props = {
     listing: any;
+    containerStyle: ViewStyle
+    Onpress?: (item: any) => void;
 }
-const ApartmentItem : React.FC<Props> = ({listing}) =>{
 
-    
+const defaultImage = "https://placeholder.com/180";
+
+
+const ApartmentItem : React.FC<Props> = ({listing, containerStyle={}, Onpress}) =>{
+
+    //const isNested = listing?.properties !== null;
+    //const data = isNested ? listing.properties : listing
+
+    const data = listing?.properties ?? listing ?? {};
     
     return(
-        <View style={styles.card}>
-            <Image source={{uri: listing.medium_url}} style={styles.images} />
+        <View style={[styles.card, containerStyle]}>
+            <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center'}} activeOpacity={0.9} onPress={Onpress}>
+            <Image source={{uri: data.medium_url || defaultImage}} style={styles.images} />
             <View style={styles.rightContainer}>
-                <Text style={styles.title}>{listing.name}</Text>
-                <Text style={styles.desc}>{truncateText(listing.description, 30)}</Text>
+                <Text style={styles.title}>{truncateText(data.name, 30)}</Text>
+                <Text style={styles.desc}>{truncateText(data.description, 30)}</Text>
                 <View style={styles.footer}>
-                    <Text style={styles.price}>DT {listing.price} night </Text>
-                    <Text style={styles.price}> ★ {listing.review_scores_rating / 20} ({listing.number_of_reviews})</Text>
+                    <Text style={styles.price}>DT {data.price} night </Text>
+                    <Text style={styles.price}> ★ {data.review_scores_rating / 20} ({data.number_of_reviews})</Text>
                 </View>
             </View>
+            </TouchableOpacity>
+            
         </View>
     )
     
@@ -31,13 +43,6 @@ const ApartmentItem : React.FC<Props> = ({listing}) =>{
 const styles = StyleSheet.create({
     card :{
         backgroundColor: '#fff',
-        //position: 'relative',
-        //bottom: 70,
-        //padding: 10,
-        //right: 10,
-        //left: 10,
-
-        flexDirection: 'row',
         borderRadius: 20,
         overflow: 'hidden',
     },
