@@ -9,6 +9,7 @@ import Listing from "../../presentation/screens/Listing.screen";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ListingsMaps from "../../presentation/screens/ListingsMaps.screen";
 import { createSharedElementStackNavigator } from 'react-navigation-shared-element';
+import SignUp from "../../presentation/screens/modals/Signup.modal";
 
 const {height, width} = Dimensions.get('window');
 
@@ -44,7 +45,7 @@ const RootNavigator = () => {
                         gestureEnabled: true,
                         ...TransitionPresets.ModalPresentationIOS,
                         headerLeft: () =>(
-                            <TouchableOpacity activeOpacity={0.7} style={{marginLeft: 10}} onPress={() => navigation.goBack()}>
+                            <TouchableOpacity activeOpacity={0.7} style={{marginLeft: 10}} onPress={() => navigation.navigate('Explore')}>
                                 <Ionicons name="close-outline" size={35} />
                             </TouchableOpacity>
                         )
@@ -63,6 +64,21 @@ const RootNavigator = () => {
 
                         }}
                         
+                    />
+
+                    <RootStack.Screen name="Signup" component={SignUp}
+                                        
+                        options={{
+                            headerTitle: 'S\'inscrire',
+                            headerTitleStyle: {
+                                textAlign: 'center',
+                                marginLeft: width * 0.2,
+                                fontFamily: 'Poppins-Medium',
+                                fontSize: 18
+                            }
+
+                        }}
+                                        
                     />
 
                     <RootStack.Screen name="Map" component={ListingsMaps}

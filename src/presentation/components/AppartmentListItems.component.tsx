@@ -36,11 +36,12 @@ const ApartmentListItems: React.FC<Props> = ({listings}) =>{
 
     return(
             <FlatList 
-            renderItem={RenderItem}
             keyExtractor={item => item.id}
             data={loading ? [] : filteredItems}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.contentContainerStyle}
+            renderItem={RenderItem}
+
             />
     )
     

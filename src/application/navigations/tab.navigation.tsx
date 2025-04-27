@@ -35,9 +35,10 @@ const Tabs =  createBottomTabNavigator<TabStackParamList>()
 
 const TabNavigator = () =>{
     return(
-        <Tabs.Navigator>
+        <Tabs.Navigator screenOptions={{unmountOnBlur: true}}>
             <Tabs.Group 
                 screenOptions={{
+                    //unmountOnBlur: true,
                     headerShown: false, 
                     tabBarActiveTintColor: Color.primary,
                     tabBarLabelStyle:{
@@ -81,6 +82,7 @@ const TabNavigator = () =>{
                 />
                 <Tabs.Screen name="Profile" component={Profile} 
                     options={{
+                        //unmountOnBlur: true,
                         tabBarLabel: 'Profile',
                         tabBarIcon: ({color, size}) =>(
                             <Ionicons name="person-circle-outline" color={color} size={size} />

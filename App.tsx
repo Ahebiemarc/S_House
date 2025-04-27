@@ -14,6 +14,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import RootNavigator from './src/application/navigations/Root.navigation';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { AuthProvider } from './src/application/hooks/useAuth';
 
 
 
@@ -31,10 +32,11 @@ function App(): React.JSX.Element {
         backgroundColor={backgroundStyle.backgroundColor}
         
       />
-
-      <NavigationContainer>
-            <RootNavigator />
-      </NavigationContainer>
+      <AuthProvider>
+        <NavigationContainer>
+              <RootNavigator />
+        </NavigationContainer>
+      </AuthProvider>
       
     </GestureHandlerRootView>
   );

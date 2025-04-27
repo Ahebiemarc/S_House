@@ -6,7 +6,7 @@ import { truncateText } from "../../application/utils/functions/functions";
 
 type Props = {
     listing: any;
-    containerStyle: ViewStyle
+    containerStyle?: ViewStyle
     Onpress?: (item: any) => void;
 }
 

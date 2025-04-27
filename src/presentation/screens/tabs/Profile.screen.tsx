@@ -1,4 +1,4 @@
-import {Button, Image, ImageProps, ImageSourcePropType, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import {Button, Image, ImageProps, ImageSourcePropType, ListRenderItem, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import * as Btn  from "../../components/Button.component";
 import { TabStackScreenProps } from "../../../domain/types/route.types";
 import React, { useEffect, useMemo, useState } from "react";
@@ -8,10 +8,12 @@ import { defaultStyles } from "../../../application/utils/constants/Styles";
 import Colors from "../../../application/utils/constants/Color";
 import AddBtnListing from "../../components/AddBtnListing.component";
 import { images } from "../../../application/utils/constants/assets";
-import BottomSheet from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import ApartmentListItems from "../../components/AppartmentListItems.component";
 
 import listingsData from '../../assets/data/airbnb-listings.json';
+import ApartmentItem from "../../components/ApartmentItem.component";
+import ProtectedRoute from "../../../application/routes/Protected.route";
 
 
 
@@ -30,6 +32,8 @@ const Profile: React.FC<Props> = ({navigation}) => {
     const [isLoading, setIsLoading] = useState(false);
 
     const snapPoints = useMemo(() => ['25%', '50%', '90%'], []);
+    
+
 
     useEffect(() => {
         // Fetch user data
@@ -49,9 +53,20 @@ const Profile: React.FC<Props> = ({navigation}) => {
         // Set photo to captured image
     }
 
+
+    const renderItem : ListRenderItem<any> = ({item}) => {
+        //console.log(item);
+        //console.log(1);
+        
+        
+        return(
+            <ApartmentItem listing={item} />
+        )
+    }
+
+
     return(
         <SafeAreaView style={defaultStyles.container}>
-            
             <View style={styles.headerContainer}>
                 <Text style={styles.header} >Profile</Text>
                 <Ionicons name="notifications-outline" size={26} color="#000" />
@@ -127,11 +142,16 @@ const Profile: React.FC<Props> = ({navigation}) => {
              >
                 <View style={styles.contentContainer}>
                     <Text style={styles.listTitle}>{items.length + 1} apartments</Text>
-                    <ApartmentListItems listings={items} />
+                    <BottomSheetFlatList
+                    data={items}
+                    keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+                    renderItem={renderItem}
+                    contentContainerStyle={styles.flatListContentContainer}
+                    //estimatedItemSize={43.3}
+                />
                     
                 </View>
             </BottomSheet>
-
         </SafeAreaView>
     )
 }
@@ -191,6 +211,20 @@ const styles = StyleSheet.create({
         marginVertical: 5,
         marginBottom: 15,
     },
+    flatListContentContainer: {
+        gap: 10,
+        padding: 10,
+    
+    },
 })
 
-export default Profile;
+
+
+export default function ProtectedProfile(props: Props) {
+    return (
+      <ProtectedRoute>
+        <Profile {...props} />
+      </ProtectedRoute>
+    );
+}
+
