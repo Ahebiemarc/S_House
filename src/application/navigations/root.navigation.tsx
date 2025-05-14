@@ -10,11 +10,16 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import ListingsMaps from "../../presentation/screens/ListingsMaps.screen";
 import { createSharedElementStackNavigator } from 'react-navigation-shared-element';
 import SignUp from "../../presentation/screens/modals/Signup.modal";
+import MyListHouse from "../../presentation/screens/MylistHouse.screen";
+import DetailsAddPost from "../../presentation/screens/DetailsAddPost.screen";
+import LocationAddPost from "../../presentation/screens/LocationAddPost.screen";
+import MapAddPost from "../../presentation/screens/MapAddPost.screen";
+import Message from "../../presentation/screens/Message.screen";
 
 const {height, width} = Dimensions.get('window');
 
 
-const Stack = createSharedElementStackNavigator<RootStackParamList>();
+//const Stack = createSharedElementStackNavigator<RootStackParamList>();
 
 
 const namesRoute = [
@@ -33,6 +38,26 @@ const RootNavigator = () => {
                 <RootStack.Group>
                     <RootStack.Screen name="Tab" component={TabNavigator} options={{headerShown: false}} />
                     <RootStack.Screen name="Listing" component={Listing} options={{headerTitle: '', headerTransparent: true}}/>
+                    <RootStack.Screen name="DetailsAddPost" component={DetailsAddPost} options={{ title: 'Informations Propriété' }} />
+                    <RootStack.Screen name="LocationAddPost" component={LocationAddPost} options={{ title: 'Localisation' }}/>
+                    <RootStack.Screen name="MapAddPost" component={MapAddPost} options={{ title: 'Sélectionner sur la Carte' }} />
+                    <RootStack.Screen name="MyListHouse" component={MyListHouse}  options={{headerTitle: '', headerTransparent: true}}/>
+
+                    <RootStack.Screen
+                    name="MessageScreen"
+                    component={Message}
+                    options={{ // Dynamic options for header
+                        headerTitleAlign: 'left', // Align title to the left
+                        headerBackTitleVisible: false, // Hide "Back" text on iOS
+                        headerStyle: {
+                            backgroundColor: '#FFFFFF', // White background for header
+                            // borderBottomWidth: 1, // Optional: add a border
+                            // borderBottomColor: '#E5E5EA',
+                        },
+                        headerShadowVisible: true, // Show default header shadow
+                    }}
+                    />
+                    
                 </RootStack.Group>
                 <RootStack.Group 
                     screenOptions={({navigation}) => ({

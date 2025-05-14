@@ -1,6 +1,16 @@
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { CompositeScreenProps, NavigatorScreenParams } from "@react-navigation/native"
 import { StackScreenProps } from "@react-navigation/stack";
+import { Message } from "../interface/Message";
+
+
+
+// ⬇️ D'abord ton SharedElementStack bien typé
+export type SharedElementStackParamList = {
+    DetailsAddPost: undefined;
+    LocationAddPost: undefined;
+    MapAddPost: undefined;
+};
 
 // définition des paramètres de route possibles pour la pile racine de  l'application
 export type RootStackParamList = {
@@ -15,6 +25,18 @@ export type RootStackParamList = {
     Booking: undefined;
     Listing: {item: any};
     Map: {item: any};
+    DetailsAddPost: undefined;
+    LocationAddPost: undefined;
+    MapAddPost: undefined;
+    MessageScreen: {
+        chatId: string;
+        userName: string;
+        userAvatar: string;
+        initialMessages: Message[];
+    };
+    //SharedElementStack: NavigatorScreenParams<SharedElementStackParamList>;
+    MyListHouse: {items?: any}
+
 
 }
 

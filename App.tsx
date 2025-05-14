@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler'; // Importer ce module en premier
-import { NavigationContainer } from '@react-navigation/native';
+import {NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 //import type {PropsWithChildren} from 'react';
 import {
@@ -15,8 +15,20 @@ import {
 import RootNavigator from './src/application/navigations/Root.navigation';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AuthProvider } from './src/application/hooks/useAuth';
+import { DefaultTheme, PaperProvider } from 'react-native-paper';
+import { PostProvider } from './src/application/hooks/PostContext';
 
 
+// Thème pour react-native-paper (optionnel)
+const theme = {
+  ...DefaultTheme,
+  roundness: 8,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#6200ee',
+    accent: '#03dac4',
+  },
+};
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -27,16 +39,22 @@ function App(): React.JSX.Element {
 
   return (
     <GestureHandlerRootView style={[backgroundStyle, {flex:1}]}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-        
-      />
-      <AuthProvider>
-        <NavigationContainer>
-              <RootNavigator />
-        </NavigationContainer>
-      </AuthProvider>
+      <PaperProvider theme={theme}>
+          <StatusBar
+            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+            backgroundColor={backgroundStyle.backgroundColor}
+            
+          />
+          <AuthProvider>
+            <PostProvider>
+              <NavigationContainer>
+                  <RootNavigator />
+              </NavigationContainer>
+            </PostProvider>
+            
+          </AuthProvider>
+      </PaperProvider>
+      
       
     </GestureHandlerRootView>
   );

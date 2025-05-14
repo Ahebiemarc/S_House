@@ -1,32 +1,61 @@
-import { SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { defaultStyles } from "../../../application/utils/constants/Styles";
 import Colors from "../../../application/utils/constants/Color";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../../domain/types/route.types";
+import { useState } from "react";
+import { useAuth } from "../../../application/hooks/useAuth";
 
 
 
 const Login = () =>{
+    const [username, setUesername] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const { login } = useAuth();
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+
+    const handleLogin = async () => {
+        if (!username || !password) {
+          Alert.alert('Erreur', 'Veuillez remplir tous les champs.');
+          return;
+        }
+        setLoading(true);
+        await  login(username, password); // Simulate network delay
+        console.log('Simulating login for:', username);
+        // --- End Simulation ---
+        setLoading(false);
+        // Navigation is handled by the RootLayoutNav effect
+        navigation.navigate('Tab', {screen: 'Explore'})
+      };
     
     return (
         <View style={styles.container}>
             <TextInput
             autoCapitalize="none"
             placeholder="Username"
+            value={username}
+            onChangeText={setUesername}
             style={[defaultStyles.inputField, { marginBottom: 30 }]}
            />
             <TextInput
             secureTextEntry
             autoCapitalize="none"
             placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
             style={[defaultStyles.inputField, { marginBottom: 30 }]}
 
             />
 
-        <TouchableOpacity style={defaultStyles.btn}>
+        <TouchableOpacity style={defaultStyles.btn} onPress={handleLogin}>
+            {loading ? (
+            <ActivityIndicator color={Colors.white} />
+          ) : (
             <Text style={defaultStyles.btnText}>Se connecter</Text>
+          )}
         </TouchableOpacity>
 
         <View style={styles.seperatorView}>

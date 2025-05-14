@@ -1,4 +1,4 @@
-import {Button, Image, ImageProps, ImageSourcePropType, ListRenderItem, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import {Image, ImageSourcePropType, ListRenderItem, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import * as Btn  from "../../components/Button.component";
 import { TabStackScreenProps } from "../../../domain/types/route.types";
 import React, { useEffect, useMemo, useState } from "react";
@@ -6,52 +6,212 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { defaultStyles } from "../../../application/utils/constants/Styles";
 import Colors from "../../../application/utils/constants/Color";
-import AddBtnListing from "../../components/AddBtnListing.component";
-import { images } from "../../../application/utils/constants/assets";
-import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
-import ApartmentListItems from "../../components/AppartmentListItems.component";
-
 import listingsData from '../../assets/data/airbnb-listings.json';
 import ApartmentItem from "../../components/ApartmentItem.component";
 import ProtectedRoute from "../../../application/routes/Protected.route";
+import { useAuth } from "../../../application/hooks/useAuth";
+import { Alert } from "react-native";
+import { UserPost } from "../MylistHouse.screen";
+
+
+const defautProfile = require('../../../presentation/assets/images/defautProfile.png');
+
+
+
+
+// Données initiales des posts favoris
+const INITIAL_USER_POSTS: UserPost[] = [
+  {
+    id: 'post1',
+    title: 'Belle Villa avec Piscine',
+    price: '350 000 €',
+    address: '123 Rue de la Plage, Nice',
+    desc: 'Magnifique villa avec vue mer et piscine privée. Idéale pour les vacances ou comme résidence principale.',
+    city: 'Nice',
+    bedroom: '4',
+    bathroom: '3',
+    latitude: 43.7102,
+    longitude: 7.2620,
+    type: 'Maison', // Exemple
+    property: 'Vente', // Exemple
+    // imageUri: 'URL_DE_VOTRE_IMAGE_VILLA',
+    imagePlaceholderColor: '#B0E0E6', // Bleu poudre
+  },
+  {
+    id: 'post2',
+    title: 'Appartement Moderne Centre-Ville',
+    price: '1 200 €/mois',
+    address: '45 Avenue Jean Médecin, Nice',
+    desc: 'Superbe appartement T3 refait à neuf, lumineux et proche de toutes commodités.',
+    city: 'Nice',
+    bedroom: '2',
+    bathroom: '1',
+    latitude: 43.7034,
+    longitude: 7.2661,
+    type: 'Appartement', // Exemple
+    property: 'Location', // Exemple
+    // imageUri: 'URL_DE_VOTRE_IMAGE_APPART',
+    imagePlaceholderColor: '#FFDAB9', // Pêche
+  },
+  {
+    id: 'post3',
+    title: 'Maison de Campagne Charmante',
+    price: '280 000 €',
+    address: '789 Chemin des Oliviers, Grasse',
+    desc: 'Maison en pierre avec grand jardin arboré, au calme absolu.',
+    city: 'Grasse',
+    bedroom: '3',
+    bathroom: '2',
+    latitude: 43.6580,
+    longitude: 6.9237,
+    type: 'Maison', // Exemple
+    property: 'Vente', // Exemple
+    imagePlaceholderColor: '#98FB98', // Vert pâle
+  },
+  {
+    id: 'post4',
+    title: 'Belle Villa avec Piscine',
+    price: '350 000 €',
+    address: '123 Rue de la Plage, Nice',
+    desc: 'Magnifique villa avec vue mer et piscine privée. Idéale pour les vacances ou comme résidence principale.',
+    city: 'Nice',
+    bedroom: '4',
+    bathroom: '3',
+    latitude: 43.7102,
+    longitude: 7.2620,
+    type: 'Maison', // Exemple
+    property: 'Vente', // Exemple
+    // imageUri: 'URL_DE_VOTRE_IMAGE_VILLA',
+    imagePlaceholderColor: '#B0E0E6', // Bleu poudre
+  },
+  {
+    id: 'post5',
+    title: 'Appartement Moderne Centre-Ville',
+    price: '1 200 €/mois',
+    address: '45 Avenue Jean Médecin, Nice',
+    desc: 'Superbe appartement T3 refait à neuf, lumineux et proche de toutes commodités.',
+    city: 'Nice',
+    bedroom: '2',
+    bathroom: '1',
+    latitude: 43.7034,
+    longitude: 7.2661,
+    type: 'Appartement', // Exemple
+    property: 'Location', // Exemple
+    // imageUri: 'URL_DE_VOTRE_IMAGE_APPART',
+    imagePlaceholderColor: '#FFDAB9', // Pêche
+  },
+  {
+    id: 'post6',
+    title: 'Maison de Campagne Charmante',
+    price: '280 000 €',
+    address: '789 Chemin des Oliviers, Grasse',
+    desc: 'Maison en pierre avec grand jardin arboré, au calme absolu.',
+    city: 'Grasse',
+    bedroom: '3',
+    bathroom: '2',
+    latitude: 43.6580,
+    longitude: 6.9237,
+    type: 'Maison', // Exemple
+    property: 'Vente', // Exemple
+    imagePlaceholderColor: '#98FB98', // Vert pâle
+  },
+  {
+    id: 'post7',
+    title: 'Belle Villa avec Piscine',
+    price: '350 000 €',
+    address: '123 Rue de la Plage, Nice',
+    desc: 'Magnifique villa avec vue mer et piscine privée. Idéale pour les vacances ou comme résidence principale.',
+    city: 'Nice',
+    bedroom: '4',
+    bathroom: '3',
+    latitude: 43.7102,
+    longitude: 7.2620,
+    type: 'Maison', // Exemple
+    property: 'Vente', // Exemple
+    // imageUri: 'URL_DE_VOTRE_IMAGE_VILLA',
+    imagePlaceholderColor: '#B0E0E6', // Bleu poudre
+  },
+  {
+    id: 'post8',
+    title: 'Appartement Moderne Centre-Ville',
+    price: '1 200 €/mois',
+    address: '45 Avenue Jean Médecin, Nice',
+    desc: 'Superbe appartement T3 refait à neuf, lumineux et proche de toutes commodités.',
+    city: 'Nice',
+    bedroom: '2',
+    bathroom: '1',
+    latitude: 43.7034,
+    longitude: 7.2661,
+    type: 'Appartement', // Exemple
+    property: 'Location', // Exemple
+    // imageUri: 'URL_DE_VOTRE_IMAGE_APPART',
+    imagePlaceholderColor: '#FFDAB9', // Pêche
+  },
+  {
+    id: 'post9',
+    title: 'Maison de Campagne Charmante',
+    price: '280 000 €',
+    address: '789 Chemin des Oliviers, Grasse',
+    desc: 'Maison en pierre avec grand jardin arboré, au calme absolu.',
+    city: 'Grasse',
+    bedroom: '3',
+    bathroom: '2',
+    latitude: 43.6580,
+    longitude: 6.9237,
+    type: 'Maison', // Exemple
+    property: 'Vente', // Exemple
+    imagePlaceholderColor: '#98FB98', // Vert pâle
+  },
+  
+];
 
 
 
 type Props = TabStackScreenProps<'Profile'>
 
 const Profile: React.FC<Props> = ({navigation}) => {
-    const [username, setUesername] = useState<string>('Ahebié Markus');
-    const [email, setEmail] = useState<string>('ahebiemarc22@gmail.com');
-    const [photo, setPhoto] = useState<ImageProps>(require('../../../presentation/assets/images/4.jpg'));
-    const [listPost, setListPost] = useState<Array<any>>(images);
+
+    //const [listPost, setListPost] = useState<Array<any>>(images);
 
     const items = useMemo(() => listingsData as any, []);    
-
-
     const [edit, setEdit] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState(false);
+    const { logout, user } = useAuth();
+    console.log(user?.user);
+    
 
     const snapPoints = useMemo(() => ['25%', '50%', '90%'], []);
     
 
 
-    useEffect(() => {
-        // Fetch user data
-        
-        setUesername(username);
-        setEmail(email);
+    /*useEffect(() => {
+
         setListPost(listPost);
-    }, [username, email, listPost ]);
+    }, [listPost ]);*/
+
+    const handleLogout = () => {
+        // Add confirmation alert
+         Alert.alert(
+             "Déconnexion", // Title
+             "Êtes-vous sûr de vouloir vous déconnecter ?", // Message
+             [
+                 {
+                     text: "Annuler",
+                     style: "cancel"
+                 },
+                 {
+                     text: "Déconnexion",
+                     onPress: () => {
+                         logout();
+                         // Navigation handled by RootLayoutNav effect
+                     },
+                     style: "destructive" // Red color for logout action on iOS
+                 }
+             ]
+         );
+      };
 
 
-    const onSaveUser = async () =>{
-        setEdit(false);
-    };
-
-    const onCaptureImage = async () =>{
-        // Capture image using camera
-        // Set photo to captured image
-    }
 
 
     const renderItem : ListRenderItem<any> = ({item}) => {
@@ -73,10 +233,10 @@ const Profile: React.FC<Props> = ({navigation}) => {
                 
             </View>
 
-            {username && (
+            {user?.user && (
                 <View style={styles.card}>
-                    <TouchableOpacity activeOpacity={0.8} onPress={onCaptureImage} >
-                        <Image source={photo} style={styles.avatar} />
+                    <TouchableOpacity activeOpacity={0.8}  >
+                        <Image source={user?.user.avatar ? {uri: user?.user.avatar} : defautProfile } style={styles.avatar} />
                     </TouchableOpacity>
                     <View style={{flexDirection: 'row', gap:6}}>
                         {/*edit ? (
@@ -99,59 +259,36 @@ const Profile: React.FC<Props> = ({navigation}) => {
                             </View>
                         ) : */}
                             <View style={styles.editRow}>
-                                <Text style={{fontFamily:'Poppins-Bold', fontSize:22}}>{username}</Text>
+                                <Text style={{fontFamily:'Poppins-Bold', fontSize:22}}>{user?.user.username}</Text>
                                 <TouchableOpacity onPress={()=> setEdit(true)}>
                                     <Ionicons name="create-outline" size={24} color={Colors.dark} />
                                 </TouchableOpacity>
                             </View>
                         
                     </View>
-                    <Text style={{fontFamily:'Poppins-Regular', fontSize:16, color:Colors.grey}}>{email}</Text>
+                    <Text style={{fontFamily:'Poppins-Regular', fontSize:16, color:Colors.grey}}>{user?.user.email}</Text>
                 </View>
             )}
 
             
 
             <View style={{justifyContent: 'center', padding: 20,}}>
-                <AddBtnListing data={listPost} />
-                <TouchableOpacity style={{flexDirection:'row', alignSelf: 'flex-end', marginVertical: 20, justifyContent: 'center',}}>
-                    <Text style={{fontFamily: 'Poppins-SemiBold', fontSize:18, color: Colors.primary ,marginHorizontal: 5}}>Add news</Text>
+                {/*<AddBtnListing data={listPost} />*/}
+                <TouchableOpacity style={{flexDirection:'row', alignSelf: 'flex-end', marginVertical: 20, justifyContent: 'center',}} onPress={() => navigation.navigate('DetailsAddPost')}>
+                    <Text style={{fontFamily: 'Poppins-SemiBold', fontSize:18, color: Colors.primary ,marginHorizontal: 5}}>Ajouter </Text>
                     <Ionicons name="add" size={24} color={Colors.primary} />
                 </TouchableOpacity>
-                <TouchableOpacity style={{flexDirection:'row', alignSelf: 'flex-end', marginVertical: 0, justifyContent: 'center', }}>
-                    <Text style={{fontFamily: 'Poppins-SemiBold', fontSize:18, color: Colors.primary, marginHorizontal: 5,textAlign: 'center' }}>Sign out</Text>
+                <TouchableOpacity style={{flexDirection:'row', alignSelf: 'flex-end', marginVertical: 0, justifyContent: 'center', }} onPress={handleLogout}>
+                    <Text style={{fontFamily: 'Poppins-SemiBold', fontSize:18, color: Colors.primary, marginHorizontal: 5,textAlign: 'center' }}>Déconnexion</Text>
                     <MaterialCommunityIcons name="logout" size={24} color={Colors.primary} />
                 </TouchableOpacity>
+                <TouchableOpacity style={{flexDirection:'row', alignSelf: 'flex-end', marginVertical: 20, justifyContent: 'center', }}  onPress={() => navigation.navigate('MyListHouse', {items: INITIAL_USER_POSTS})}>
+                    <Text style={{fontFamily: 'Poppins-SemiBold', fontSize:18, color: Colors.primary, marginHorizontal: 5,textAlign: 'center' }}>Voir mes maisons</Text>
+                    <MaterialCommunityIcons name="eye" size={24} color={Colors.primary} />
+                </TouchableOpacity>
             </View>
-            {/*<View style={{
-                alignItems: 'center',
-                position: 'absolute',
-                bottom:120,
-                left:0,
-                right:0,
-                //backgroundColor: '#000'
-            }}>
-                <Btn.Button title="Sign In" onPress={()=> navigation.navigate('Login')} />
-                <Btn.Button title="Sign Out" />
-            </View>*/}
 
-            <BottomSheet
-            index={0}
-            snapPoints={snapPoints}
-            //onChange={handleSheetChanges}
-             >
-                <View style={styles.contentContainer}>
-                    <Text style={styles.listTitle}>{items.length + 1} apartments</Text>
-                    <BottomSheetFlatList
-                    data={items}
-                    keyExtractor={(item, index) => item.id?.toString() || index.toString()}
-                    renderItem={renderItem}
-                    contentContainerStyle={styles.flatListContentContainer}
-                    //estimatedItemSize={43.3}
-                />
-                    
-                </View>
-            </BottomSheet>
+   
         </SafeAreaView>
     )
 }
@@ -227,4 +364,5 @@ export default function ProtectedProfile(props: Props) {
       </ProtectedRoute>
     );
 }
+
 

@@ -11,6 +11,7 @@ interface ProtectedRouteProps {
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { user } = useAuth();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  
 
   useFocusEffect(
     useCallback(() => {

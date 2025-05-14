@@ -7,6 +7,8 @@ import { useNavigation } from "@react-navigation/native";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated";
 import { formatText } from "../../application/utils/functions/functions";
+import ImagesCarousel from "./ImageCarousel";
+import { images } from "../../application/utils/constants/assets";
 
 
 interface Props {
@@ -49,6 +51,7 @@ const Listings: React.FC<Props> = ({listings: items, category}) => {
         >
             <Animated.View style={styles.listing} entering={FadeInRight} exiting={FadeOutLeft}>
                 <Animated.Image source={{uri: item.medium_url}} style={styles.image} 
+                
                 onError={() => handleImageError(item)}
                 />
                 <TouchableOpacity style={{position: 'absolute', right: 30, top: 30, backgroundColor: "#fff", borderRadius: 30 ,padding: 5}}>

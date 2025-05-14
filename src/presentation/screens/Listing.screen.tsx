@@ -6,6 +6,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import Colors from "../../application/utils/constants/Color";
 import { defaultStyles } from "../../application/utils/constants/Styles";
+import ImagesCarousel from "../components/ImageCarousel";
+import { images } from "../../application/utils/constants/assets";
 
 const IMG_HEIGHT = 300;
 const {width} = Dimensions.get('window');
@@ -85,11 +87,12 @@ const Listing:React.FC<Props> = ({route, navigation}) => {
                 showsVerticalScrollIndicator={false}
             >
 
-                <Animated.Image
+                {/*<Animated.Image
                 source={{ uri: item.xl_picture_url }}
                 style={[styles.image, imageAnimatedStyle]}
                 resizeMode="cover"
-               />
+               />*/}
+               <ImagesCarousel images={images} stylesP={[styles.image, imageAnimatedStyle]}/>
                 <View style={styles.infoContainer}>
                     <Text style={styles.name}>{item.name}</Text>
                     <Text style={styles.location}>

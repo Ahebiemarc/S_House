@@ -5,11 +5,15 @@ import AuthService from "../../infrastructure/api/auth.api";
 import axios from "axios";
 
 // Types
-interface User {
+type UserProps = {
   id: string;
   username: string;
   email: string;
   avatar?: string;
+}
+interface User {
+  
+  user: UserProps;
 }
 
 interface AuthContextType {
@@ -17,7 +21,7 @@ interface AuthContextType {
   loading: boolean;
   isAuthenticated: boolean;
   token: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (username: string, password: string) => Promise<void>;
   register: (username: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -54,10 +58,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const login = async (email: string, password: string) => {
+  const login = async (username: string, password: string) => {
     try {
       setLoading(true);
-      const { token: newToken } = await AuthService.login({ email, password });
+      const { token: newToken } = await AuthService.login({ username, password });
       await AsyncStorage.setItem("token", newToken);
       axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
       const userData = await AuthService.getMe(newToken);
