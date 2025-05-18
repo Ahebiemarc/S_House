@@ -38,15 +38,17 @@ const Login = () =>{
             placeholder="Username"
             value={username}
             onChangeText={setUesername}
-            style={[defaultStyles.inputField, { marginBottom: 30 }]}
+            placeholderTextColor={Colors.gray}
+            style={[defaultStyles.inputField, { marginBottom: 30, color: "#000"  }]}
            />
             <TextInput
             secureTextEntry
             autoCapitalize="none"
             placeholder="Password"
             value={password}
+            placeholderTextColor={Colors.gray}
             onChangeText={setPassword}
-            style={[defaultStyles.inputField, { marginBottom: 30 }]}
+            style={[defaultStyles.inputField, { marginBottom: 30, color: "#000" }]}
 
             />
 

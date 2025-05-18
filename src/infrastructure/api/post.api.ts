@@ -18,6 +18,18 @@ const PostService = {
     return res.data;
   },
 
+  // GET : post par ID
+  getByUser: async () => {
+    const token = await AsyncStorage.getItem('token');
+    const res = await API.get(`/posts/user`, {
+      headers:{
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
+      }
+    });
+    return res.data;
+  },
+
   // GET : posts par propriété
   getByProperty: async (property: string) => {
     const res = await API.get(`/posts/property/${property}`);
@@ -58,8 +70,6 @@ const PostService = {
         type: file.type,
       } as any);
     });
-
-    console.log(formData);
     
 
     const res = await API.post('/posts', formData, {
@@ -69,7 +79,6 @@ const PostService = {
       },
     });
 
-    console.log(res);
     
 
     return res.data;

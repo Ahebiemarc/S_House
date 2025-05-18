@@ -16,18 +16,24 @@ const SignUp = () =>{
             <TextInput
             autoCapitalize="none"
             placeholder="Username"
-            style={[defaultStyles.inputField, { marginBottom: 30 }]}
+            placeholderTextColor={Colors.gray}
+
+            style={[defaultStyles.inputField, { marginBottom: 30, color: "#000" }]}
            />
             <TextInput
             autoCapitalize="none"
             placeholder="Email"
-            style={[defaultStyles.inputField, { marginBottom: 30 }]}
+            placeholderTextColor={Colors.gray}
+
+            style={[defaultStyles.inputField, { marginBottom: 30, color: "#000" }]}
            />
             <TextInput
             secureTextEntry
             autoCapitalize="none"
             placeholder="Password"
-            style={[defaultStyles.inputField, { marginBottom: 30 }]}
+            placeholderTextColor={Colors.gray}
+
+            style={[defaultStyles.inputField, { marginBottom: 30 , color: "#000"}]}
 
             />
 

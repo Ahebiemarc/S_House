@@ -1,3 +1,5 @@
+//components/ExploreHeader.component.tsx
+
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { RootStackParamList } from "../../domain/types/route.types";
 import React, { useRef, useState } from "react";
@@ -8,41 +10,28 @@ import HapticFeedback from "react-native-haptic-feedback";
 
 import Colors from "../../application/utils/constants/Color"
 import { StackNavigationProp } from "@react-navigation/stack";
+import { Property } from "../../domain/enum/post";
+
+
 
 
 const categories = [
-    {
-      name: 'Tiny homes',
-      icon: 'home',
-    },
-    {
-      name: 'Cabins',
-      icon: 'house-siding',
-    },
-    {
-      name: 'Trending',
-      icon: 'local-fire-department',
-    },
-    {
-      name: 'Play',
-      icon: 'videogame-asset',
-    },
-    {
-      name: 'City',
-      icon: 'apartment',
-    },
-    {
-      name: 'Beachfront',
-      icon: 'beach-access',
-    },
-    {
-      name: 'Countryside',
-      icon: 'nature-people',
-    },
-];
+  { name: 'All', icon: 'pallet' },
+
+  { name: 'APARTMENT', icon: 'home' },
+  { name: 'STUDIO', icon: 'other-houses' },
+  { name: 'S_1', icon: 'house-siding' },
+  { name: 'S_2', icon: 'house-siding' },
+  { name: 'S_3', icon: 'house-siding' },
+  { name: 'VILLA', icon: 'warehouse' },
+  { name: 'FURNITURE', icon: 'bed' },
+  { name: 'NO_FURNITURE', icon: 'bed' },
+  { name: 'DUPLEX', icon: 'house' },
+  { name: 'HOUSE', icon: 'houseboat' },
+] as { name: keyof typeof Property; icon: string }[];
   
 interface Props {
-    onCategoryChanged: (category: string) => void;
+    onCategoryChanged: (category: any) => void;
 }
 
 type ExploreHeaderNavigationProp = StackNavigationProp<RootStackParamList, 'Tab'>;
@@ -56,7 +45,7 @@ const ExploreHeader:React.FC<Props> = ({onCategoryChanged}) => {
 
   const navigation = useNavigation<ExploreHeaderNavigationProp>();
 
-  const selectCategory = (index: number) => {
+  {/*const selectCategory = (index: number) => {
     const selected = itemsRef.current[index];
     setActiveIndex(index);
     selected?.measure((fx, fy, width, height, px) => {
@@ -64,6 +53,17 @@ const ExploreHeader:React.FC<Props> = ({onCategoryChanged}) => {
     });
     HapticFeedback.trigger('impactLight', { enableVibrateFallback: true});
     onCategoryChanged(categories[index].name);
+  };*/}
+
+  const selectCategory = (index: number) => {
+    const selected = itemsRef.current[index];
+    setActiveIndex(index);
+    selected?.measure((fx, fy, width, height, px) => {
+      scrollRef.current?.scrollTo({ x: px - 16, y: 0, animated: true });
+    });
+    HapticFeedback.trigger('impactLight', { enableVibrateFallback: true });
+    const selectedKey = categories[index].name;
+    onCategoryChanged(selectedKey); // Envoie uniquement la clé à Explore
   };
 
   return(
@@ -106,7 +106,8 @@ const ExploreHeader:React.FC<Props> = ({onCategoryChanged}) => {
               color={activeIndex === index ? '#000' : Colors.grey}
             />
             <Text style={activeIndex === index ? styles.categoryTextActive : styles.categoryText}>
-              {item.name}
+            {(item.name in Property) ? Property[item.name as keyof typeof Property] : item.name}
+
             </Text>
           </TouchableOpacity>
         ))}

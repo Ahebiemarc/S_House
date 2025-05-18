@@ -1,20 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { ActivityIndicator, Alert, PermissionsAndroid, Platform, StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { Marker, PROVIDER_GOOGLE, Region } from "react-native-maps";
 import { defaultStyles } from "../../application/utils/constants/Styles";
 import Geolocation from "@react-native-community/geolocation";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../../domain/types/route.types";
-import { useNavigation } from "@react-navigation/native";
+import { RootStackParamList, RootStackScreenProps } from "../../domain/types/route.types";
 import MapView from "react-native-map-clustering";
 import listingsDataGeo from '../assets/data/airbnb-listings.geo.json'
 import ApartmentItem from "../components/ApartmentItem.component";
+import Colors from "../../application/utils/constants/Color";
 
 
 
-interface Props {
-    listings: any;
-}
+
+
 
 type ExploreHeaderNavigationProp = StackNavigationProp<RootStackParamList, 'Tab'>;
 
@@ -27,21 +26,27 @@ const defaultLocation = {
 
 
 const INITIAL_REGION = {
-    latitude: 52.52, // Latitude pour Berlin
-    longitude: 13.405, // Longitude pour Berlin
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  };
+  latitude:  35.1615,
+  longitude: 9.7658,
+  latitudeDelta: 0.0922,
+  longitudeDelta: 0.0421,
+};
+
+
+type PropsMap = RootStackScreenProps<'Map'>
+
   
-const ListingsMaps = () => {
+const ListingsMaps: FC<PropsMap> = ({route, navigation}) => {
 
     const [location, setLocation] = useState<Region>();
     const [loading, setLoading] = useState(true);
+    const {items} = route.params
+    console.log(items);
+    
 
     const [selectedApartment, setSelectedApartment] = useState(null);
 
 
-    const navigation = useNavigation<ExploreHeaderNavigationProp>();
     const listings: any = listingsDataGeo;
     
 
@@ -55,7 +60,7 @@ const ListingsMaps = () => {
 
 
     const onMarkerSelected = ( item: any) => {
-        navigation.navigate('Listing', {item: item.properties});
+        navigation.navigate('Listing', {post: item.properties});
     }
     
       const getCurrentLocation = () => {
@@ -160,20 +165,30 @@ const ListingsMaps = () => {
                 clusterFontFamily="Popins-Bold"
                 renderCluster={renderCluster}
             >
-                {listings.features.map((item:any) => (
+                {
+                  items.length === 0 ? (
+                    <View style={styles.centeredMessageContainer}>
+                      <Text style={styles.emptyIcon}>🏠</Text>
+                      <Text style={styles.emptyText}>Aucune propriété trouvée".</Text>
+                      <Text style={styles.emptySubText}>Essayez de sélectionner une autre catégorie ou vérifiez plus tard !</Text>
+                    </View>
+
+                  ) : (
+                
+                items.map((item:any) => (
                     <Marker 
-                      key={item.properties.id}
+                      key={item.id}
                       //onPress={() => onMarkerSelected(item)}
                       onPress={() => setSelectedApartment(item)}
                       coordinate={{
-                        latitude: +item.properties.latitude,
-                        longitude: +item.properties.longitude,
+                        latitude: +item.latitude,
+                        longitude: +item.longitude,
                     }} >
                       <View style={styles.marker}>
-                        <Text style={styles.markerText}>DT {item.properties.price}</Text>
+                        <Text style={styles.markerText}>DT {item.price}</Text>
                       </View>
                     </Marker>
-                ))}
+                )))}
             </MapView>
             )
         }
@@ -221,6 +236,30 @@ const styles = StyleSheet.create({
       color: '#000',
       textAlign: 'center',
     },
+    centeredMessageContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+      marginTop: 50,
+    },
+    emptyIcon: {
+          fontSize: 60, // Taille de l'icône augmentée
+          marginBottom: 15,
+        },
+        emptyText: {
+          fontSize: 18,
+          fontFamily: 'Poppins-SemiBold', // Assurez-vous que cette police est chargée
+          textAlign: 'center',
+          color: Colors.dark,
+          marginBottom: 5,
+        },
+        emptySubText: {
+          fontSize: 14,
+          fontFamily: 'Poppins-Regular', // Assurez-vous que cette police est chargée
+          textAlign: 'center',
+          color: Colors.grey,
+        },
 });
 
 export default ListingsMaps;

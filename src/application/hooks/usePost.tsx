@@ -24,7 +24,8 @@ interface PostDataContextType {
   // Méthodes API
   getAllPosts: () => Promise<PostData[]>;
   getPostById: (id: string) => Promise<PostData>;
-  getPostsByProperty: (property: string) => Promise<PostData[]>;
+  getPostByUser: () => Promise<PostData[]>;
+  getPostsByProperty: (property: Property) => Promise<PostData[]>;
   getPostsByType: (type: string) => Promise<PostData[]>;
   searchPosts: (query: string) => Promise<PostData[]>;
   // addPost utilise postData du contexte et les fichiers image fournis
@@ -115,6 +116,8 @@ export const PostProvider: React.FC<PostProviderProps> = ({ children }) => {
   const getAllPosts = useCallback(async (): Promise<PostData[]> => {
     try {
       const posts = await PostService.getAll();
+      //console.log(posts);
+      
       return posts;
     } catch (error) {
       console.error("Erreur lors de la récupération de tous les posts:", error);
@@ -133,9 +136,24 @@ export const PostProvider: React.FC<PostProviderProps> = ({ children }) => {
     }
   }, []);
 
-  // Récupérer les posts par propriété
-  const getPostsByProperty = useCallback(async (property: string): Promise<PostData[]> => {
+  // Récupérer les posts de l'user
+  const getPostByUser = useCallback(async (): Promise<PostData[]> => {
     try {
+      const post = await PostService.getByUser();
+      return post;
+    } catch (error) {
+      console.error(`Erreur lors de la récupération des post de l'utilsateur:`, error);
+      throw error;
+    }
+  }, []);
+
+  
+
+  // Récupérer les posts par propriété
+  const getPostsByProperty = useCallback(async (property: Property): Promise<PostData[]> => {
+    try {
+      //console.log(property);
+      
       const posts = await PostService.getByProperty(property);
       return posts;
     } catch (error){
@@ -173,11 +191,6 @@ export const PostProvider: React.FC<PostProviderProps> = ({ children }) => {
    */
   const addPost = useCallback(async (imageFiles: ImageFile[]): Promise<any> => {
     try {
-      // postData de l'état est envoyé comme données principales.
-      // Sa propriété `images: string[]` sera envoyée dans le cadre des données du formulaire.
-      // Les `imageFiles` sont ajoutés séparément comme 'img' par PostService.
-      // Assurez-vous que votre backend gère cela comme prévu.
-      //console.log(postData);
       
       const result = await PostService.add(postData, imageFiles);
       // Optionnel: effacer les données du formulaire après une soumission réussie
@@ -194,12 +207,11 @@ export const PostProvider: React.FC<PostProviderProps> = ({ children }) => {
    */
   const updatePost = useCallback(async (id: string, imageFiles: ImageFile[]): Promise<any> => {
     try {
-      // Similaire à addPost, postData de l'état est utilisé.
       // Ses `images: string[]` (URIs locaux) seront envoyées.
       // Les `imageFiles` sont pour les téléchargements de fichiers nouveaux/mis à jour.
       const result = await PostService.update(id, postData, imageFiles);
-      // Optionnel: effacer les données du formulaire après une mise à jour réussie
-      // clearPostData();
+      // effacer les données du formulaire après une mise à jour réussie
+      clearPostData();
       return result;
     } catch (error) {
       console.error(`Erreur lors de la mise à jour du post ${id}:`, error);
@@ -225,9 +237,7 @@ export const PostProvider: React.FC<PostProviderProps> = ({ children }) => {
   const loadPostForEditing = useCallback(async (id: string): Promise<void> => {
     try {
       const fetchedPost = await PostService.getById(id);
-      // Assurez-vous que tous les champs de fetchedPost sont correctement mappés à l'état postData.
-      // Si fetchedPost peut avoir des champs non présents dans initialPostData ou vice-versa,
-      // vous voudrez peut-être fusionner avec soin.
+
       setPostData({
         ...initialPostData, // Commence avec les valeurs par défaut pour s'assurer que toutes les clés sont présentes
         ...fetchedPost,     // Écrase avec les données récupérées
@@ -249,6 +259,7 @@ export const PostProvider: React.FC<PostProviderProps> = ({ children }) => {
     clearPostData,
     getAllPosts,
     getPostById,
+    getPostByUser,
     getPostsByProperty,
     getPostsByType,
     searchPosts,

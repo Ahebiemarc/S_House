@@ -2,6 +2,7 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { CompositeScreenProps, NavigatorScreenParams } from "@react-navigation/native"
 import { StackScreenProps } from "@react-navigation/stack";
 import { Message } from "../interface/Message";
+import { PostData } from "../interface/Post.interface";
 
 
 
@@ -23,8 +24,8 @@ export type RootStackParamList = {
     EditApartment: undefined;
     MyApartmentList: undefined;
     Booking: undefined;
-    Listing: {item: any};
-    Map: {item: any};
+    Listing: {post: PostData};
+    Map: {items: any};
     DetailsAddPost: undefined;
     LocationAddPost: undefined;
     MapAddPost: undefined;

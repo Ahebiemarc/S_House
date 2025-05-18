@@ -1,7 +1,7 @@
 
 
-export const formatText = (text: string) =>{
-    const maxLength = 35;
+export const formatText = (text: string , maxLength = 25) =>{
+    //const maxLength = 35;
     let formatted = '';
     let index = 0;
 

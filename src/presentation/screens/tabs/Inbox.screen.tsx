@@ -166,7 +166,6 @@ const Inbox: React.FC<ChatScreenProps> = ({ navigation }) => {
   };
 
 
-  // Styles (les styles restent les mêmes, pas besoin de les convertir en TS explicitement)
    // Styles
   const styles = StyleSheet.create({
       safeArea: {

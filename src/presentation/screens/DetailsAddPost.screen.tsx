@@ -7,7 +7,7 @@ import { Picker } from '@react-native-picker/picker';
 import { StackScreenProps } from '@react-navigation/stack';
 import { launchImageLibrary, ImageLibraryOptions, Asset } from 'react-native-image-picker'; // *** Importer image-picker ***
 import { RootStackParamList } from '../../domain/types/route.types';
-import { usePostData} from '../../application/hooks/PostContext';
+import { usePostData} from '../../application/hooks/usePost';
 import { Property, Type } from '../../domain/enum/post';
 import ProtectedRoute from '../../application/routes/Protected.route';
 

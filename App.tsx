@@ -16,7 +16,8 @@ import RootNavigator from './src/application/navigations/Root.navigation';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AuthProvider } from './src/application/hooks/useAuth';
 import { DefaultTheme, PaperProvider } from 'react-native-paper';
-import { PostProvider } from './src/application/hooks/PostContext';
+import { PostProvider } from './src/application/hooks/usePost';
+import { FavoritesProvider } from './src/application/hooks/useFavorites';
 
 
 // Thème pour react-native-paper (optionnel)
@@ -47,9 +48,11 @@ function App(): React.JSX.Element {
           />
           <AuthProvider>
             <PostProvider>
-              <NavigationContainer>
-                  <RootNavigator />
-              </NavigationContainer>
+              <FavoritesProvider>
+                <NavigationContainer>
+                    <RootNavigator />
+                </NavigationContainer>
+              </FavoritesProvider>
             </PostProvider>
             
           </AuthProvider>

@@ -1,5 +1,5 @@
-// modal/MyListHouse.modal.tsx
-import React, { useLayoutEffect, useState } from 'react';
+// screen/MyListHouse.modal.tsx
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -8,41 +8,31 @@ import {
   Image,
   TouchableOpacity,
   Animated,
+  Alert,
 } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { RootStackScreenProps } from '../../domain/types/route.types';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from "../../application/utils/constants/Color";
+import { Property, Type } from '../../domain/enum/post';
+import { PostData } from '../../domain/interface/Post.interface';
+import { usePostData } from '../../application/hooks/usePost';
 
 
 
-// Définition des types pour Type et Property (à adapter selon votre définition réelle)
-// Exemple:
-// export enum Type { MAISON = "Maison", APPARTEMENT = "Appartement" }
-// export enum Property { VENTE = "Vente", LOCATION = "Location" }
-// Pour cet exemple, nous utiliserons des strings simples.
-// Vous devrez définir ces types (Type et Property) dans votre projet.
-// Pour l'instant, nous allons les typer comme string pour que le code fonctionne.
-type PostType = string; // Remplacez par keyof typeof Type une fois Type défini
-type PostProperty = string; // Remplacez par keyof typeof Property une fois Property défini
 
-// Définition du type pour un post favori, basé sur votre PostData
-export interface UserPost {
-  id: string; // Ajout d'un ID unique pour la gestion de la liste
-  title: string;
-  price: string;
-  address: string;
-  desc: string;
-  city: string;
-  bedroom: string;
-  bathroom: string;
-  latitude: number | null;
-  longitude: number | null;
-  type: PostType;
-  property: PostProperty;
-  imageUri?: string; // Pour l'image unique
-  imagePlaceholderColor: string;
-}
+
+
+const PostSkeleton = () => (
+  <View style={styles.skeletonContainer}>
+    <View style={styles.skeletonImage} />
+    <View style={styles.skeletonTextContainer}>
+      <View style={styles.skeletonLineShort} />
+      <View style={styles.skeletonLineMedium} />
+      <View style={styles.skeletonLineLong} />
+    </View>
+  </View>
+);
 
 
 
@@ -52,16 +42,56 @@ export interface UserPost {
 type Props = RootStackScreenProps<'MyListHouse'>
 
 const Screen: React.FC<Props> = ({route, navigation}) => {
-  const { items } = route.params;
-  const [userPosts, setuserPosts] = useState<UserPost[]>(items);
+  //const { items } = route.params;
+  //const [userPosts, setuserPosts] = useState<UserPost[]>(items);
+  const [userPosts, setuserPosts] = useState<PostData[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const {getPostByUser, removePost} = usePostData()
 
   // Fonction pour supprimer un post de la liste des favoris
-  const removeFavorite = (postId: string) => {
+  /*const removeFavorite = (postId: string) => {
     setuserPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
-  };
+  };*/
 
 
-   useLayoutEffect(() => {
+  const fetchUserPosts = useCallback(async () => {
+      try {
+        setIsLoading(true);
+        const fetchedPosts = await getPostByUser();
+        setuserPosts(fetchedPosts);
+      } catch (err: any) {
+        console.error("Erreur lors de la récupération de tous les posts:", err);
+        Alert.alert("Erreur de chargement", "Impossible de récupérer les post.");
+      } finally {
+        setIsLoading(false);
+  
+      }
+    }, [getPostByUser]);
+  
+  const fetchDeletePost = useCallback(async (postId: string) => {
+      try {
+        setIsLoading(true);
+        await removePost(postId);
+        const fetchedPosts = await getPostByUser();
+        setuserPosts(fetchedPosts);
+        //setuserPosts(fetchedPosts);
+      } catch (err: any) {
+        console.error(`Erreur lors de la suppression des posts pour la propriété :`, err);
+        Alert.alert(`Erreur lors de la suppression des posts pour la propriété`);
+      } finally {
+        setIsLoading(false);
+      }
+  }, [removePost]);
+
+
+  useEffect(() => {
+      
+          fetchUserPosts();
+
+    }, [fetchUserPosts, fetchDeletePost]);
+
+
+  useLayoutEffect(() => {
           navigation.setOptions({
             headerTitle: '',
             headerTransparent: true,
@@ -73,10 +103,20 @@ const Screen: React.FC<Props> = ({route, navigation}) => {
           });
   }, []);
 
+  if (isLoading ) { // Affiche le skeleton seulement au chargement initial si pas de posts
+    return (
+      <>
+      {[...Array(7)].map((_, index) => (
+        <PostSkeleton key={index} />
+      ))}
+    </>
+    );
+  }
+
       
 
   // Rendu de chaque élément de la liste des posts
-  const renderPostItem = (data: { item: UserPost }, rowMap: any) => (
+  const renderPostItem = (data: { item: PostData }, rowMap: any) => (
     <View style={styles.postItemContainer}>
       <View style={styles.postItem}>
         {/* Placeholder pour l'image du post */}
@@ -98,7 +138,7 @@ const Screen: React.FC<Props> = ({route, navigation}) => {
         </View>
         <TouchableOpacity
           style={styles.heartIconContainer}
-          onPress={() => removeFavorite(data.item.id)}>
+          onPress={() => fetchDeletePost(data.item.id!)}>
           <Text style={styles.heartIcon}>❤️</Text>
         </TouchableOpacity>
       </View>
@@ -106,15 +146,15 @@ const Screen: React.FC<Props> = ({route, navigation}) => {
   );
 
   // Rendu du bouton de suppression caché pour le swipe
-  const renderHiddenItem = (data: { item: UserPost }, rowMap: any) => (
+  const renderHiddenItem = (data: { item: PostData }, rowMap: any) => (
     <View style={styles.rowBack}>
       <TouchableOpacity
         style={[styles.backRightBtn, styles.backRightBtnRight]}
         onPress={() => {
-          if (rowMap[data.item.id]) {
-            rowMap[data.item.id].closeRow();
+          if (rowMap[data.item.id!]) {
+            rowMap[data.item.id!].closeRow();
           }
-          removeFavorite(data.item.id);
+          fetchDeletePost(data.item.id!);
         }}>
         <Animated.View style={[styles.trashButton]}>
             <Text style={styles.trashIcon}>🗑️</Text>
@@ -144,7 +184,7 @@ const Screen: React.FC<Props> = ({route, navigation}) => {
         previewOpenValue={-40}
         previewOpenDelay={3000}
         disableRightSwipe
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.id!}
         contentContainerStyle={styles.listContentContainer}
         showsVerticalScrollIndicator={false}
 
@@ -200,8 +240,6 @@ const styles = StyleSheet.create({
     marginRight: 15,
     justifyContent: 'center',
     alignItems: 'center',
-    // borderWidth: 1, // Optionnel
-    // borderColor: '#ddd', // Optionnel
   },
   imagePlaceholderText: {
     fontSize: 30,
@@ -301,6 +339,50 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#777',
     textAlign: 'center',
+  },
+  skeletonContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 15,
+    marginBottom: 15,
+    marginHorizontal: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  skeletonImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 10,
+    backgroundColor: '#e0e0e0',
+    marginRight: 15,
+  },
+  skeletonTextContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  skeletonLineShort: {
+    width: '60%',
+    height: 10,
+    backgroundColor: '#e0e0e0',
+    marginBottom: 10,
+    borderRadius: 5,
+  },
+  skeletonLineMedium: {
+    width: '80%',
+    height: 10,
+    backgroundColor: '#e0e0e0',
+    marginBottom: 10,
+    borderRadius: 5,
+  },
+  skeletonLineLong: {
+    width: '40%',
+    height: 10,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 5,
   },
 });
 

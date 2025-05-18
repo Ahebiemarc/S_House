@@ -1,3 +1,5 @@
+// screen/Wishlists.tabs.srceen.tsx
+
 import React, { useState } from 'react';
 import {
   SafeAreaView,
@@ -9,191 +11,24 @@ import {
   Animated,
 } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
+import { Property, Type } from '../../../domain/enum/post';
+import { useFavorites } from '../../../application/hooks/useFavorites';
+import { PostData } from '../../../domain/interface/Post.interface';
 
-// Définition des types pour Type et Property (à adapter selon votre définition réelle)
-// Exemple:
-// export enum Type { MAISON = "Maison", APPARTEMENT = "Appartement" }
-// export enum Property { VENTE = "Vente", LOCATION = "Location" }
-// Pour cet exemple, nous utiliserons des strings simples.
-// Vous devrez définir ces types (Type et Property) dans votre projet.
-// Pour l'instant, nous allons les typer comme string pour que le code fonctionne.
-type PostType = string; // Remplacez par keyof typeof Type une fois Type défini
-type PostProperty = string; // Remplacez par keyof typeof Property une fois Property défini
-
-// Définition du type pour un post favori, basé sur votre PostData
-interface FavoritePost {
-  id: string; // Ajout d'un ID unique pour la gestion de la liste
-  title: string;
-  price: string;
-  address: string;
-  desc: string;
-  city: string;
-  bedroom: string;
-  bathroom: string;
-  latitude: number | null;
-  longitude: number | null;
-  type: PostType;
-  property: PostProperty;
-  imageUri?: string; // Pour l'image unique
-  imagePlaceholderColor: string;
-}
-
-// Données initiales des posts favoris
-// Remplacez les imageUri par les URL de vos images ou utilisez des images locales
-const INITIAL_FAVORITE_POSTS: FavoritePost[] = [
-  {
-    id: 'post1',
-    title: 'Belle Villa avec Piscine',
-    price: '350 000 €',
-    address: '123 Rue de la Plage, Nice',
-    desc: 'Magnifique villa avec vue mer et piscine privée. Idéale pour les vacances ou comme résidence principale.',
-    city: 'Nice',
-    bedroom: '4',
-    bathroom: '3',
-    latitude: 43.7102,
-    longitude: 7.2620,
-    type: 'Maison', // Exemple
-    property: 'Vente', // Exemple
-    // imageUri: 'URL_DE_VOTRE_IMAGE_VILLA',
-    imagePlaceholderColor: '#B0E0E6', // Bleu poudre
-  },
-  {
-    id: 'post2',
-    title: 'Appartement Moderne Centre-Ville',
-    price: '1 200 €/mois',
-    address: '45 Avenue Jean Médecin, Nice',
-    desc: 'Superbe appartement T3 refait à neuf, lumineux et proche de toutes commodités.',
-    city: 'Nice',
-    bedroom: '2',
-    bathroom: '1',
-    latitude: 43.7034,
-    longitude: 7.2661,
-    type: 'Appartement', // Exemple
-    property: 'Location', // Exemple
-    // imageUri: 'URL_DE_VOTRE_IMAGE_APPART',
-    imagePlaceholderColor: '#FFDAB9', // Pêche
-  },
-  {
-    id: 'post3',
-    title: 'Maison de Campagne Charmante',
-    price: '280 000 €',
-    address: '789 Chemin des Oliviers, Grasse',
-    desc: 'Maison en pierre avec grand jardin arboré, au calme absolu.',
-    city: 'Grasse',
-    bedroom: '3',
-    bathroom: '2',
-    latitude: 43.6580,
-    longitude: 6.9237,
-    type: 'Maison', // Exemple
-    property: 'Vente', // Exemple
-    imagePlaceholderColor: '#98FB98', // Vert pâle
-  },
-  {
-    id: 'post4',
-    title: 'Belle Villa avec Piscine',
-    price: '350 000 €',
-    address: '123 Rue de la Plage, Nice',
-    desc: 'Magnifique villa avec vue mer et piscine privée. Idéale pour les vacances ou comme résidence principale.',
-    city: 'Nice',
-    bedroom: '4',
-    bathroom: '3',
-    latitude: 43.7102,
-    longitude: 7.2620,
-    type: 'Maison', // Exemple
-    property: 'Vente', // Exemple
-    // imageUri: 'URL_DE_VOTRE_IMAGE_VILLA',
-    imagePlaceholderColor: '#B0E0E6', // Bleu poudre
-  },
-  {
-    id: 'post5',
-    title: 'Appartement Moderne Centre-Ville',
-    price: '1 200 €/mois',
-    address: '45 Avenue Jean Médecin, Nice',
-    desc: 'Superbe appartement T3 refait à neuf, lumineux et proche de toutes commodités.',
-    city: 'Nice',
-    bedroom: '2',
-    bathroom: '1',
-    latitude: 43.7034,
-    longitude: 7.2661,
-    type: 'Appartement', // Exemple
-    property: 'Location', // Exemple
-    // imageUri: 'URL_DE_VOTRE_IMAGE_APPART',
-    imagePlaceholderColor: '#FFDAB9', // Pêche
-  },
-  {
-    id: 'post6',
-    title: 'Maison de Campagne Charmante',
-    price: '280 000 €',
-    address: '789 Chemin des Oliviers, Grasse',
-    desc: 'Maison en pierre avec grand jardin arboré, au calme absolu.',
-    city: 'Grasse',
-    bedroom: '3',
-    bathroom: '2',
-    latitude: 43.6580,
-    longitude: 6.9237,
-    type: 'Maison', // Exemple
-    property: 'Vente', // Exemple
-    imagePlaceholderColor: '#98FB98', // Vert pâle
-  },
-  {
-    id: 'post7',
-    title: 'Belle Villa avec Piscine',
-    price: '350 000 €',
-    address: '123 Rue de la Plage, Nice',
-    desc: 'Magnifique villa avec vue mer et piscine privée. Idéale pour les vacances ou comme résidence principale.',
-    city: 'Nice',
-    bedroom: '4',
-    bathroom: '3',
-    latitude: 43.7102,
-    longitude: 7.2620,
-    type: 'Maison', // Exemple
-    property: 'Vente', // Exemple
-    // imageUri: 'URL_DE_VOTRE_IMAGE_VILLA',
-    imagePlaceholderColor: '#B0E0E6', // Bleu poudre
-  },
-  {
-    id: 'post8',
-    title: 'Appartement Moderne Centre-Ville',
-    price: '1 200 €/mois',
-    address: '45 Avenue Jean Médecin, Nice',
-    desc: 'Superbe appartement T3 refait à neuf, lumineux et proche de toutes commodités.',
-    city: 'Nice',
-    bedroom: '2',
-    bathroom: '1',
-    latitude: 43.7034,
-    longitude: 7.2661,
-    type: 'Appartement', // Exemple
-    property: 'Location', // Exemple
-    // imageUri: 'URL_DE_VOTRE_IMAGE_APPART',
-    imagePlaceholderColor: '#FFDAB9', // Pêche
-  },
-  {
-    id: 'post9',
-    title: 'Maison de Campagne Charmante',
-    price: '280 000 €',
-    address: '789 Chemin des Oliviers, Grasse',
-    desc: 'Maison en pierre avec grand jardin arboré, au calme absolu.',
-    city: 'Grasse',
-    bedroom: '3',
-    bathroom: '2',
-    latitude: 43.6580,
-    longitude: 6.9237,
-    type: 'Maison', // Exemple
-    property: 'Vente', // Exemple
-    imagePlaceholderColor: '#98FB98', // Vert pâle
-  },
-];
 
 const Screen: React.FC = () => {
-  const [favoritePosts, setFavoritePosts] = useState<FavoritePost[]>(INITIAL_FAVORITE_POSTS);
+  //const [favoritePosts, setFavoritePosts] = useState<FavoritePost[]>(INITIAL_FAVORITE_POSTS);
+  const { favorites, toggleFavorite } = useFavorites();
+
 
   // Fonction pour supprimer un post de la liste des favoris
-  const removeFavorite = (postId: string) => {
-    setFavoritePosts(prevPosts => prevPosts.filter(post => post.id !== postId));
+  const removeFavorite = (post: PostData) => {
+    //setFavoritePosts(prevPosts => prevPosts.filter(post => post.id !== postId));
+    toggleFavorite(post)
   };
 
   // Rendu de chaque élément de la liste des posts
-  const renderPostItem = (data: { item: FavoritePost }, rowMap: any) => (
+  const renderPostItem = (data: { item: PostData }, rowMap: any) => (
     <View style={styles.postItemContainer}>
       <View style={styles.postItem}>
         {/* Placeholder pour l'image du post */}
@@ -215,7 +50,7 @@ const Screen: React.FC = () => {
         </View>
         <TouchableOpacity
           style={styles.heartIconContainer}
-          onPress={() => removeFavorite(data.item.id)}>
+          onPress={() => toggleFavorite(data.item)}>
           <Text style={styles.heartIcon}>❤️</Text>
         </TouchableOpacity>
       </View>
@@ -223,15 +58,15 @@ const Screen: React.FC = () => {
   );
 
   // Rendu du bouton de suppression caché pour le swipe
-  const renderHiddenItem = (data: { item: FavoritePost }, rowMap: any) => (
+  const renderHiddenItem = (data: { item: PostData }, rowMap: any) => (
     <View style={styles.rowBack}>
       <TouchableOpacity
         style={[styles.backRightBtn, styles.backRightBtnRight]}
         onPress={() => {
-          if (rowMap[data.item.id]) {
-            rowMap[data.item.id].closeRow();
+          if (rowMap[data.item.id!]) {
+            rowMap[data.item.id!].closeRow();
           }
-          removeFavorite(data.item.id);
+          toggleFavorite(data.item)
         }}>
         <Animated.View style={[styles.trashButton]}>
             <Text style={styles.trashIcon}>🗑️</Text>
@@ -252,14 +87,14 @@ const Screen: React.FC = () => {
       </View>
 
       {/* Contenu principal */}
-      {favoritePosts.length === 0 ? (
+      {favorites.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyIcon}>🏠</Text>
           <Text style={styles.emptyText}>Vous n'avez pas de Maison favorites</Text>
         </View>
       ) : (
         <SwipeListView
-          data={favoritePosts}
+          data={favorites}
           renderItem={renderPostItem}
           renderHiddenItem={renderHiddenItem}
           rightOpenValue={-100} // Largeur du bouton de suppression
@@ -267,7 +102,7 @@ const Screen: React.FC = () => {
           previewOpenValue={-40}
           previewOpenDelay={3000}
           disableRightSwipe
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.id!}
           contentContainerStyle={styles.listContentContainer}
           showsVerticalScrollIndicator={false}
         />

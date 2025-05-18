@@ -1,6 +1,6 @@
 export enum Type {
-    BUY = 'Acheter',
-    RENT = 'Louer',
+    BUY = 'A Vendre',
+    RENT = 'A Louer',
   }
   
   export enum Property {
@@ -14,4 +14,5 @@ export enum Type {
     S_1 = 'S+1',
     S_2 = 'S+2',
     S_3 = 'S+3',
+    All = 'Toutes'
   }

@@ -1,5 +1,5 @@
-import React, { useLayoutEffect } from "react";
-import { Dimensions, Image, SafeAreaView, Share, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { Alert, Dimensions, Image, SafeAreaView, Share, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { RootStackScreenProps } from "../../domain/types/route.types";
 import Animated, { interpolate, SlideInDown, useAnimatedRef, useAnimatedStyle, useScrollViewOffset } from "react-native-reanimated";
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -7,18 +7,50 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from "../../application/utils/constants/Color";
 import { defaultStyles } from "../../application/utils/constants/Styles";
 import ImagesCarousel from "../components/ImageCarousel";
-import { images } from "../../application/utils/constants/assets";
+import { PostData } from "../../domain/interface/Post.interface";
+import { useFavorites } from "../../application/hooks/useFavorites";
+
+const defaultProfile = require("../../presentation/assets/images/defautProfile.png")
 
 const IMG_HEIGHT = 300;
 const {width} = Dimensions.get('window');
 
 type Props = RootStackScreenProps<'Listing'>
 
-const Listing:React.FC<Props> = ({route, navigation}) => {
 
-    const { item } = route.params;
-    console.log(item);
-    console.log("00000000000000000000");
+//Simplified Skeleton
+const ListingSkeleton = () => {
+  return (
+      <View style={styles.container}>
+          <View style={[styles.image, { backgroundColor: '#e0e0e0' }]} />
+          <View style={styles.infoContainer}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <View style={{ width: '60%', height: 20, backgroundColor: '#e0e0e0' }} />
+                  <View style={{ width: '20%', height: 20, backgroundColor: '#e0e0e0' }} />
+              </View>
+              <View style={{ width: '80%', height: 18, backgroundColor: '#e0e0e0', marginBottom: 10 }} />
+              <View style={{ width: '50%', height: 18, backgroundColor: '#e0e0e0', marginBottom: 10 }} />
+              <View style={{ width: '40%', height: 20, backgroundColor: '#e0e0e0' }} />
+              <View style={styles.divider} />
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                  <View style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: '#e0e0e0' }} />
+                  <View>
+                      <View style={{ width: '70%', height: 20, backgroundColor: '#e0e0e0', marginBottom: 5 }} />
+                      <View style={{ width: '50%', height: 16, backgroundColor: '#e0e0e0' }} />
+                  </View>
+              </View>
+              <View style={styles.divider} />
+              <View style={{ width: '90%', height: 80, backgroundColor: '#e0e0e0', marginTop: 10 }} />
+          </View>
+      </View>
+  );
+};
+
+const Listing:React.FC<Props> = ({route, navigation}) => {
+    const { post } = route.params;
+    const [posts, setPosts] = useState<PostData>(post);
+    const { toggleFavorite, isFavorite } = useFavorites();
+    const isFavorited = isFavorite(posts.id!);
     
 
     const scrollRef = useAnimatedRef<Animated.ScrollView>();
@@ -28,8 +60,8 @@ const Listing:React.FC<Props> = ({route, navigation}) => {
     const shareListing = async () => {
         try {
           await Share.share({
-            title: item.name,
-            url: item.listing_url,
+            title: posts.title,
+            url: posts.images[0],
           });
         } catch (err) {
           console.log(err);
@@ -49,8 +81,15 @@ const Listing:React.FC<Props> = ({route, navigation}) => {
               <TouchableOpacity style={styles.roundButton} onPress={shareListing}>
                 <Ionicons name="share-outline" size={22} color={'#000'} />
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.roundButton, {marginRight: 10}]}>
-                <Ionicons name="heart-outline" size={22} color={'#000'} />
+              <TouchableOpacity 
+              onPress={() => toggleFavorite(posts)}
+              style={[styles.roundButton, {marginRight: 10}]}
+              >
+                <Ionicons 
+                  name={isFavorited ? "heart" : "heart-outline"} 
+                  size={22} color={isFavorited ? "red" : "#000"}
+                />
+                
               </TouchableOpacity>
             </View>
           ),
@@ -60,7 +99,9 @@ const Listing:React.FC<Props> = ({route, navigation}) => {
             </TouchableOpacity>
           ),
         });
-      }, []);
+      }, [navigation, isFavorited]);
+    
+      
 
     const imageAnimatedStyle = useAnimatedStyle(() => {
         return {
@@ -76,6 +117,11 @@ const Listing:React.FC<Props> = ({route, navigation}) => {
           opacity: interpolate(scrollOffset.value, [0, IMG_HEIGHT / 1.5], [0, 1]),
         };
       }, []);
+
+    
+    const averageRating = posts.reviews.length > 0
+    ? posts.reviews.reduce((sum:number, review:any) => sum + review.rating, 0) / posts.reviews.length
+    : 0;
     
     
     return(
@@ -92,50 +138,50 @@ const Listing:React.FC<Props> = ({route, navigation}) => {
                 style={[styles.image, imageAnimatedStyle]}
                 resizeMode="cover"
                />*/}
-               <ImagesCarousel images={images} stylesP={[styles.image, imageAnimatedStyle]}/>
+               <ImagesCarousel images={posts.images} stylesP={[styles.image, imageAnimatedStyle]}/>
                 <View style={styles.infoContainer}>
-                    <Text style={styles.name}>{item.name}</Text>
+                    <Text style={styles.name}>{posts.title}</Text>
                     <Text style={styles.location}>
-                        {item.room_type} in {item.smart_location}
+                        {posts.address} à {posts.city}
                     </Text>
                     <Text style={styles.rooms}>
-                        {item.guests_included} guests · {item.bedrooms} bedrooms · {item.beds} bed ·{' '}
-                        {item.bathrooms} bathrooms
+                        {posts.bedroom} Chambres ·{' '}
+                        {posts.bathroom} Salle de bain
                     </Text>
                     <View style={{ flexDirection: 'row', gap: 4 }}>
                         <Ionicons name="star" size={16} />
                         <Text style={styles.ratings}>
-                        {item.review_scores_rating / 20} · <Text style={{textDecorationLine: 'underline'}}>{item.number_of_reviews} reviews</Text>
+                        {averageRating !== 0  ? averageRating : 'N/A'} · <Text style={{textDecorationLine: 'underline'}}>{posts.reviews.length} avis</Text>
                         </Text>
                     </View>
                     <View style={styles.divider} />
 
                     <View style={styles.hostView}>
-                        <Image source={{ uri: item.host_picture_url }} style={styles.host} />
+                        <Image source={posts.user.avatar ? {uri :posts.user.avatar} : defaultProfile  } style={styles.host} />
 
                         <View>
-                        <Text style={{ fontWeight: '500', fontSize: 16 }}>Hosted by {item.host_name}</Text>
-                        <Text>Host since {item.host_since}</Text>
+                        <Text style={{ fontWeight: '500', fontSize: 16 }}>Posté par {posts.user.username}</Text>
+                        {/*<Text>Host since {item.host_since}</Text>*/}
                         </View>
                     </View>
 
                     <View style={styles.divider} />
 
-                    <Text style={styles.description}>{item.description}</Text>
+                    <Text style={styles.description}>{posts.desc}</Text>
                 </View>
             </Animated.ScrollView>
             <Animated.View style={defaultStyles.footer} entering={SlideInDown.delay(200)}>
                 <View
                 style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <TouchableOpacity style={styles.footerText}>
-                        <Text style={styles.footerPrice}>€{item.price}</Text>
-                        <Text style={{fontFamily: 'Poppins-Medium'}}>Month</Text>
+                        <Text style={styles.footerPrice}>€{posts.price}</Text>
+                        <Text style={{fontFamily: 'Poppins-Medium'}}>Mois</Text>
 
                     </TouchableOpacity>
 
 
                     <TouchableOpacity style={[defaultStyles.btn, { paddingRight: 20, paddingLeft: 20 }]}>
-                        <Text style={defaultStyles.btnText}>Reserve</Text>
+                        <Text style={defaultStyles.btnText}>Reserver</Text>
                     </TouchableOpacity>
 
                 </View>

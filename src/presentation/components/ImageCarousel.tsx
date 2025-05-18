@@ -11,6 +11,7 @@ type ImagesCarouselProps={
 }
 
 const ImagesCarousel: React.FC<ImagesCarouselProps> = ({images, stylesP}) => {
+    
     return(
 
             <Animated.View style={styles.carouselContainer} >
@@ -21,7 +22,7 @@ const ImagesCarousel: React.FC<ImagesCarouselProps> = ({images, stylesP}) => {
                     activeDotStyle={[styles.dotStyle, { backgroundColor: 'white' }]}
                 >
                     {images.map((img) => (
-                    <Animated.Image style={[stylesP]} source={img.img} key={img.img} resizeMode="cover"  />
+                    <Animated.Image style={[stylesP]} source={{uri: img}} key={img} resizeMode="cover"  />
                 ))}
                 </Carousel>
             </Animated.View>
