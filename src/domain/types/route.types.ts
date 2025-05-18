@@ -36,7 +36,7 @@ export type RootStackParamList = {
         initialMessages: Message[];
     };
     //SharedElementStack: NavigatorScreenParams<SharedElementStackParamList>;
-    MyListHouse: {items?: any}
+    MyListHouse: undefined
 
 
 }

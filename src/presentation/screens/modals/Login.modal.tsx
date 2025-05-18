@@ -23,11 +23,8 @@ const Login = () =>{
           return;
         }
         setLoading(true);
-        await  login(username, password); // Simulate network delay
-        console.log('Simulating login for:', username);
-        // --- End Simulation ---
+        await  login(username, password);
         setLoading(false);
-        // Navigation is handled by the RootLayoutNav effect
         navigation.navigate('Tab', {screen: 'Explore'})
       };
     

@@ -11,159 +11,10 @@ import ApartmentItem from "../../components/ApartmentItem.component";
 import ProtectedRoute from "../../../application/routes/Protected.route";
 import { useAuth } from "../../../application/hooks/useAuth";
 import { Alert } from "react-native";
-import { UserPost } from "../MylistHouse.screen";
 
 
 const defautProfile = require('../../../presentation/assets/images/defautProfile.png');
 
-
-
-
-// Données initiales des posts favoris
-const INITIAL_USER_POSTS: UserPost[] = [
-  {
-    id: 'post1',
-    title: 'Belle Villa avec Piscine',
-    price: '350 000 €',
-    address: '123 Rue de la Plage, Nice',
-    desc: 'Magnifique villa avec vue mer et piscine privée. Idéale pour les vacances ou comme résidence principale.',
-    city: 'Nice',
-    bedroom: '4',
-    bathroom: '3',
-    latitude: 43.7102,
-    longitude: 7.2620,
-    type: 'Maison', // Exemple
-    property: 'Vente', // Exemple
-    // imageUri: 'URL_DE_VOTRE_IMAGE_VILLA',
-    imagePlaceholderColor: '#B0E0E6', // Bleu poudre
-  },
-  {
-    id: 'post2',
-    title: 'Appartement Moderne Centre-Ville',
-    price: '1 200 €/mois',
-    address: '45 Avenue Jean Médecin, Nice',
-    desc: 'Superbe appartement T3 refait à neuf, lumineux et proche de toutes commodités.',
-    city: 'Nice',
-    bedroom: '2',
-    bathroom: '1',
-    latitude: 43.7034,
-    longitude: 7.2661,
-    type: 'Appartement', // Exemple
-    property: 'Location', // Exemple
-    // imageUri: 'URL_DE_VOTRE_IMAGE_APPART',
-    imagePlaceholderColor: '#FFDAB9', // Pêche
-  },
-  {
-    id: 'post3',
-    title: 'Maison de Campagne Charmante',
-    price: '280 000 €',
-    address: '789 Chemin des Oliviers, Grasse',
-    desc: 'Maison en pierre avec grand jardin arboré, au calme absolu.',
-    city: 'Grasse',
-    bedroom: '3',
-    bathroom: '2',
-    latitude: 43.6580,
-    longitude: 6.9237,
-    type: 'Maison', // Exemple
-    property: 'Vente', // Exemple
-    imagePlaceholderColor: '#98FB98', // Vert pâle
-  },
-  {
-    id: 'post4',
-    title: 'Belle Villa avec Piscine',
-    price: '350 000 €',
-    address: '123 Rue de la Plage, Nice',
-    desc: 'Magnifique villa avec vue mer et piscine privée. Idéale pour les vacances ou comme résidence principale.',
-    city: 'Nice',
-    bedroom: '4',
-    bathroom: '3',
-    latitude: 43.7102,
-    longitude: 7.2620,
-    type: 'Maison', // Exemple
-    property: 'Vente', // Exemple
-    // imageUri: 'URL_DE_VOTRE_IMAGE_VILLA',
-    imagePlaceholderColor: '#B0E0E6', // Bleu poudre
-  },
-  {
-    id: 'post5',
-    title: 'Appartement Moderne Centre-Ville',
-    price: '1 200 €/mois',
-    address: '45 Avenue Jean Médecin, Nice',
-    desc: 'Superbe appartement T3 refait à neuf, lumineux et proche de toutes commodités.',
-    city: 'Nice',
-    bedroom: '2',
-    bathroom: '1',
-    latitude: 43.7034,
-    longitude: 7.2661,
-    type: 'Appartement', // Exemple
-    property: 'Location', // Exemple
-    // imageUri: 'URL_DE_VOTRE_IMAGE_APPART',
-    imagePlaceholderColor: '#FFDAB9', // Pêche
-  },
-  {
-    id: 'post6',
-    title: 'Maison de Campagne Charmante',
-    price: '280 000 €',
-    address: '789 Chemin des Oliviers, Grasse',
-    desc: 'Maison en pierre avec grand jardin arboré, au calme absolu.',
-    city: 'Grasse',
-    bedroom: '3',
-    bathroom: '2',
-    latitude: 43.6580,
-    longitude: 6.9237,
-    type: 'Maison', // Exemple
-    property: 'Vente', // Exemple
-    imagePlaceholderColor: '#98FB98', // Vert pâle
-  },
-  {
-    id: 'post7',
-    title: 'Belle Villa avec Piscine',
-    price: '350 000 €',
-    address: '123 Rue de la Plage, Nice',
-    desc: 'Magnifique villa avec vue mer et piscine privée. Idéale pour les vacances ou comme résidence principale.',
-    city: 'Nice',
-    bedroom: '4',
-    bathroom: '3',
-    latitude: 43.7102,
-    longitude: 7.2620,
-    type: 'Maison', // Exemple
-    property: 'Vente', // Exemple
-    // imageUri: 'URL_DE_VOTRE_IMAGE_VILLA',
-    imagePlaceholderColor: '#B0E0E6', // Bleu poudre
-  },
-  {
-    id: 'post8',
-    title: 'Appartement Moderne Centre-Ville',
-    price: '1 200 €/mois',
-    address: '45 Avenue Jean Médecin, Nice',
-    desc: 'Superbe appartement T3 refait à neuf, lumineux et proche de toutes commodités.',
-    city: 'Nice',
-    bedroom: '2',
-    bathroom: '1',
-    latitude: 43.7034,
-    longitude: 7.2661,
-    type: 'Appartement', // Exemple
-    property: 'Location', // Exemple
-    // imageUri: 'URL_DE_VOTRE_IMAGE_APPART',
-    imagePlaceholderColor: '#FFDAB9', // Pêche
-  },
-  {
-    id: 'post9',
-    title: 'Maison de Campagne Charmante',
-    price: '280 000 €',
-    address: '789 Chemin des Oliviers, Grasse',
-    desc: 'Maison en pierre avec grand jardin arboré, au calme absolu.',
-    city: 'Grasse',
-    bedroom: '3',
-    bathroom: '2',
-    latitude: 43.6580,
-    longitude: 6.9237,
-    type: 'Maison', // Exemple
-    property: 'Vente', // Exemple
-    imagePlaceholderColor: '#98FB98', // Vert pâle
-  },
-  
-];
 
 
 
@@ -282,7 +133,7 @@ const Profile: React.FC<Props> = ({navigation}) => {
                     <Text style={{fontFamily: 'Poppins-SemiBold', fontSize:18, color: Colors.primary, marginHorizontal: 5,textAlign: 'center' }}>Déconnexion</Text>
                     <MaterialCommunityIcons name="logout" size={24} color={Colors.primary} />
                 </TouchableOpacity>
-                <TouchableOpacity style={{flexDirection:'row', alignSelf: 'flex-end', marginVertical: 20, justifyContent: 'center', }}  onPress={() => navigation.navigate('MyListHouse', {items: INITIAL_USER_POSTS})}>
+                <TouchableOpacity style={{flexDirection:'row', alignSelf: 'flex-end', marginVertical: 20, justifyContent: 'center', }}  onPress={() => navigation.navigate('MyListHouse')}>
                     <Text style={{fontFamily: 'Poppins-SemiBold', fontSize:18, color: Colors.primary, marginHorizontal: 5,textAlign: 'center' }}>Voir mes maisons</Text>
                     <MaterialCommunityIcons name="eye" size={24} color={Colors.primary} />
                 </TouchableOpacity>
