@@ -9,6 +9,7 @@ import MapView from "react-native-map-clustering";
 import listingsDataGeo from '../assets/data/airbnb-listings.geo.json'
 import ApartmentItem from "../components/ApartmentItem.component";
 import Colors from "../../application/utils/constants/Color";
+import { PostData } from "../../domain/interface/Post.interface";
 
 
 
@@ -59,8 +60,8 @@ const ListingsMaps: FC<PropsMap> = ({route, navigation}) => {
 
 
 
-    const onMarkerSelected = ( item: any) => {
-        navigation.navigate('Listing', {post: item.properties});
+    const onMarkerSelected = ( item: PostData) => {
+        navigation.navigate('Listing', {post: item});
     }
     
       const getCurrentLocation = () => {

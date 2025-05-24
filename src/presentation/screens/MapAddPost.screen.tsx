@@ -18,8 +18,10 @@ interface Coordinates {
     longitude: number;
 }
 
-const MapAddPost: React.FC<MapScreenProps> = ({ navigation }) => {
-  const { postData, setCoordinates } = usePostData();
+const MapAddPost: React.FC<MapScreenProps> = ({ navigation, route }) => {
+  //const { postData, setCoordinates } = usePostData();
+  const { postId } = route.params || {}; // postId est disponible ici si passé
+  const { postData, setCoordinates, updatePostData: updateContextPostData, currentEditingPostId } = usePostData();
   const [mapRegion, setMapRegion] = useState<Region | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<Coordinates | null>(
       postData.latitude !== null && postData.longitude !== null
@@ -29,15 +31,25 @@ const MapAddPost: React.FC<MapScreenProps> = ({ navigation }) => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    // Si on est en mode édition et que postData a des coordonnées, les utiliser
+    // Sinon, utiliser la localisation par défaut ou celle de postData si création en cours
+    const lat = (currentEditingPostId && postData.latitude) ? postData.latitude : (postData.latitude ?? 35.1615);
+    const lon = (currentEditingPostId && postData.longitude) ? postData.longitude : (postData.longitude ?? 9.7658);
+
     const initialRegion: Region = {
-        latitude: postData.latitude ?? 35.1615,
-        longitude: postData.longitude ?? 9.7658,
+        latitude: lat,
+        longitude: lon,
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
     };
     setMapRegion(initialRegion);
+    // Si des coordonnées sont déjà dans postData (ex: chargées pour édition), pré-sélectionner le marqueur
+    if (postData.latitude && postData.longitude) {
+        setSelectedLocation({latitude: postData.latitude, longitude: postData.longitude});
+    }
     setLoading(false);
-  }, []);
+  }, [currentEditingPostId, postData.latitude, postData.longitude]); // Dépendre de postData pour re-centrer si chargé pour édition
+
 
   const handleMapPress = (event: MapPressEvent): void => {
     setSelectedLocation(event.nativeEvent.coordinate);

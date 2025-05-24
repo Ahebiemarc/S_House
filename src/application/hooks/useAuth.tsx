@@ -81,7 +81,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const { message } = await AuthService.register({ username, email, password });
       setUser(null);
       setToken(null);
-      Alert.alert(message);
+      Alert.alert(`${username} crée avec succès`);
     } catch (error: any) {
       console.error("Register error:", error);
       Alert.alert("Registration Failed", error.message || "Something went wrong.");

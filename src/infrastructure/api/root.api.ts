@@ -2,7 +2,7 @@ import axios from "axios";
 import { Platform } from "react-native";
 
 //export const API_URL = " http://127.0.0.1:5000/api";
-const API_URL = Platform.OS === 'android' ? 'http://10.0.2.2:5000/api' : 'http://127.0.0.1:5000/api';
+const API_URL = 'https://shouse-api.onrender.com/api'
 
 //export const IMG_URL = Platform.OS === 'android' ?  "http://10.0.2.2:5000" : "http://localhost:5000";
 
@@ -13,10 +13,10 @@ const API_URL = Platform.OS === 'android' ? 'http://10.0.2.2:5000/api' : 'http:/
 export const API = axios.create({
     baseURL: API_URL, // À adapter !
     withCredentials: true, // super important pour envoyer/recevoir les cookies
-    timeout: 10000, // 10 secondes de timeout
+    //timeout: 10000, // 10 secondes de timeout
   });
   
-  // Ajouter un interceptor pour gérer les erreurs automatiquement
+  /// Ajouter un interceptor pour gérer les erreurs automatiquement
   API.interceptors.response.use(
     (response) => response,
     (error) => {

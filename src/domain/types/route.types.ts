@@ -26,9 +26,9 @@ export type RootStackParamList = {
     Booking: undefined;
     Listing: {post: PostData};
     Map: {items: any};
-    DetailsAddPost: undefined;
-    LocationAddPost: undefined;
-    MapAddPost: undefined;
+    DetailsAddPost: { postId?: string };
+    LocationAddPost: { postId?: string };
+    MapAddPost: { postId?: string };
     MessageScreen: {
         chatId: string;
         userName: string;

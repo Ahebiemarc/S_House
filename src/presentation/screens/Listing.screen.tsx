@@ -61,7 +61,7 @@ const Listing:React.FC<Props> = ({route, navigation}) => {
         try {
           await Share.share({
             title: posts.title,
-            url: posts.images[0],
+            url: posts.images[0].uri!,
           });
         } catch (err) {
           console.log(err);
@@ -174,8 +174,8 @@ const Listing:React.FC<Props> = ({route, navigation}) => {
                 <View
                 style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <TouchableOpacity style={styles.footerText}>
-                        <Text style={styles.footerPrice}>€{posts.price}</Text>
-                        <Text style={{fontFamily: 'Poppins-Medium'}}>Mois</Text>
+                        <Text style={styles.footerPrice}>DT{posts.price}</Text>
+                        <Text style={{fontFamily: 'Poppins-Medium'}}>/Mois</Text>
 
                     </TouchableOpacity>
 

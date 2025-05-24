@@ -4,6 +4,7 @@ import React, { createContext, useState, useContext, ReactNode, useCallback } fr
 import { Property, Type } from '../../domain/enum/post';
 import { PostData } from '../../domain/interface/Post.interface';
 import PostService from '../../infrastructure/api/post.api';
+import { Asset } from 'react-native-image-picker';
 
 // Interface pour la structure des fichiers image attendue par PostService
 // Il est préférable de rendre name et type obligatoires pour des téléchargements robustes
@@ -18,7 +19,7 @@ interface PostDataContextType {
   postData: PostData;
   updatePostData: <K extends keyof PostData>(key: K, value: PostData[K]) => void;
   setCoordinates: (coords: { latitude: number; longitude: number }) => void;
-  setImages: (uris: string[]) => void; // Pour les URIs d'aperçu local
+  setImages: (uris: Asset[]) => void; // Pour les URIs d'aperçu local
   clearPostData: () => void; // Pour réinitialiser postData
 
   // Méthodes API
@@ -29,12 +30,16 @@ interface PostDataContextType {
   getPostsByType: (type: string) => Promise<PostData[]>;
   searchPosts: (query: string) => Promise<PostData[]>;
   // addPost utilise postData du contexte et les fichiers image fournis
-  addPost: (imageFiles: ImageFile[]) => Promise<any>; 
+  addPost: () => Promise<any>; 
   // updatePost utilise postData du contexte et les fichiers image fournis
-  updatePost: (id: string, imageFiles: ImageFile[]) => Promise<any>; 
-  removePost: (id: string) => Promise<any>;
-  // Aide pour charger un post dans l'état du contexte pour l'édition
-  loadPostForEditing: (id: string) => Promise<void>; 
+  updatePost: (id: string) => Promise<any>; 
+  loadPostForEditing: (id: string) => Promise<void>; // *** AJOUTÉ ***
+  removePost: (id: string) => Promise<any>; // Ajout de removePost
+
+  loading: boolean;
+  error: string | null;
+  currentEditingPostId: string | null; // Pour savoir si on est en mode édition
+  setCurrentEditingPostId: (id: string | null) => void; // Pour définir l'ID du post en édition 
 }
 
 // Création du contexte
@@ -54,31 +59,22 @@ interface PostProviderProps {
   children: ReactNode;
 }
 
-// État initial pour postData, conforme à l'interface PostData
-// Assurez-vous que Type et Property sont correctement importés et accessibles ici
-// Si Type ou Property sont vides, Object.keys(...)[0] pourrait causer une erreur.
-// Il est plus sûr de fournir des valeurs par défaut valides ou de gérer ce cas.
-const initialPostData: PostData = {
-  title: '',
-  price: '',
-  address: '',
-  desc: '',
-  city: '',
-  bedroom: '',
-  bathroom: '',
-  latitude: null,
-  longitude: null,
-  // Assurez-vous que Type et Property ont au moins une clé, sinon cela échouera.
-  // Si Type ou Property peuvent être vides, vous devrez gérer cela différemment.
-  type: (Object.keys(Type)[0] as keyof typeof Type) || 'defaultTypeKey', // Fournir une clé par défaut si vide
-  property: (Object.keys(Property)[0] as keyof typeof Property) || 'defaultPropertyKey', // Fournir une clé par défaut si vide
-  images: [], // Initialiser comme un tableau vide de chaînes (pour les URIs)
+const initialPostDataState: PostData = {
+  // id: undefined, // id sera défini lors du chargement pour édition
+  title: '', price: '', address: '', desc: '', city: '', bedroom: '', bathroom: '',
+  latitude: null, longitude: null,
+  type: Object.keys(Type)[0] as keyof typeof Type || 'BUY',
+  property: Object.keys(Property)[0] as keyof typeof Property || 'HOUSE',
+  images: [],
 };
 
 
 // Fournisseur du contexte
 export const PostProvider: React.FC<PostProviderProps> = ({ children }) => {
-  const [postData, setPostData] = useState<PostData>(initialPostData);
+  const [postData, setPostData] = useState<PostData>(initialPostDataState);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [currentEditingPostId, setCurrentEditingPostId] = useState<string | null>(null);
 
   // Fonction de mise à jour générique pour les champs de postData
   const updatePostData = useCallback(<K extends keyof PostData>(key: K, value: PostData[K]) => {
@@ -98,7 +94,7 @@ export const PostProvider: React.FC<PostProviderProps> = ({ children }) => {
   }, []);
 
   // Fonction pour mettre à jour le tableau des URIs d'images (pour l'aperçu local)
-  const setImages = useCallback((uris: string[]) => {
+  const setImages = useCallback((uris: Asset[]) => {
     setPostData((prevData) => ({
       ...prevData,
       images: uris,
@@ -107,7 +103,7 @@ export const PostProvider: React.FC<PostProviderProps> = ({ children }) => {
 
   // Fonction pour réinitialiser postData à son état initial
   const clearPostData = useCallback(() => {
-    setPostData(initialPostData);
+    setPostData(initialPostDataState);
   }, []);
 
   // --- Fonctions du Service API ---
@@ -184,12 +180,7 @@ export const PostProvider: React.FC<PostProviderProps> = ({ children }) => {
     }
   }, []);
 
-  /**
-   * Ajoute un nouveau post en utilisant le postData actuel du contexte et les fichiers image fournis.
-   * La propriété 'images' dans postData (string[]) est typiquement pour les URIs/aperçus locaux.
-   * Le paramètre 'imageFiles' (ImageFile[]) est pour les téléchargements réels de fichiers.
-   */
-  const addPost = useCallback(async (imageFiles: ImageFile[]): Promise<any> => {
+  /*const addPost = useCallback(async (imageFiles: ImageFile[]): Promise<any> => {
     try {
       
       const result = await PostService.add(postData, imageFiles);
@@ -200,73 +191,113 @@ export const PostProvider: React.FC<PostProviderProps> = ({ children }) => {
       console.error("Erreur lors de l'ajout du post:", error);
       throw error;
     }
-  }, [postData]); // clearPostData a été retiré des dépendances pour éviter les problèmes de closure si non mémoisé
+  }, [postData]); // clearPostData a été retiré des dépendances pour éviter les problèmes de closure si non mémoisé*/
+
+  const addPost = async (): Promise<any> => {
+    setLoading(true); setError(null);
+    try {
+      const { images: imageAssets, id, ...restOfData } = postData; // Exclure id si présent
+      const dataToSend = {
+        ...restOfData,
+        price: parseFloat(postData.price) || 0,
+        bedroom: parseInt(postData.bedroom, 10) || 0,
+        bathroom: parseInt(postData.bathroom, 10) || 0,
+      };
+      const response = await PostService.add(dataToSend, imageAssets);
+      setLoading(false);
+      // clearPostData(); // Optionnel: réinitialiser après succès
+      return response;
+    } catch (e: any) {
+      console.error("Erreur addPost:", e); setError(e.message || 'Erreur création.'); setLoading(false); throw e;
+    }
+  };
 
   /**
    * Met à jour un post existant en utilisant le postData actuel du contexte et de nouveaux fichiers image.
    */
-  const updatePost = useCallback(async (id: string, imageFiles: ImageFile[]): Promise<any> => {
-    try {
-      // Ses `images: string[]` (URIs locaux) seront envoyées.
-      // Les `imageFiles` sont pour les téléchargements de fichiers nouveaux/mis à jour.
-      const result = await PostService.update(id, postData, imageFiles);
-      // effacer les données du formulaire après une mise à jour réussie
-      clearPostData();
-      return result;
-    } catch (error) {
-      console.error(`Erreur lors de la mise à jour du post ${id}:`, error);
-      throw error;
+  // *** NOUVEAU: Implémentation de updatePost ***
+  const updatePost = async (postId: string): Promise<any> => {
+    if (!postId) {
+        setError("ID du post manquant pour la mise à jour.");
+        throw new Error("ID du post manquant pour la mise à jour.");
     }
-  }, [postData]); // clearPostData a été retiré des dépendances
-
-  // Supprimer un post par son ID
-  const removePost = useCallback(async (id: string): Promise<any> => {
+    setLoading(true); setError(null);
     try {
-      const result = await PostService.remove(id);
-      return result;
-    } catch (error) {
-      console.error(`Erreur lors de la suppression du post ${id}:`, error);
-      throw error;
+      const { images: imageAssets, id, ...restOfData } = postData; // Exclure id du payload principal
+      const dataToSend = {
+        ...restOfData,
+        price: parseFloat(postData.price) || 0,
+        bedroom: parseInt(postData.bedroom, 10) || 0,
+        bathroom: parseInt(postData.bathroom, 10) || 0,
+      };
+      // Note: La gestion des images pour la mise à jour peut être complexe.
+      // Faut-il envoyer toutes les images (Asset[]) ou seulement les nouvelles ?
+      // Votre API doit gérer si une image est une URL existante ou un nouveau fichier.
+      // Ici, on envoie toutes les images de `postData.images` comme si elles étaient à (ré)uploader.
+      const response = await PostService.update(postId, dataToSend, imageAssets);
+      setLoading(false);
+      // clearPostData(); // Optionnel: réinitialiser après succès
+      return response;
+    } catch (e: any) {
+      console.error(`Erreur updatePost (ID: ${postId}):`, e); setError(e.message || 'Erreur mise à jour.'); setLoading(false); throw e;
     }
-  }, []);
+  };
 
   /**
    * Fonction utilitaire pour récupérer un post par ID et charger ses données
    * dans l'état postData du contexte. Utile pour remplir un formulaire d'édition.
    */
-  const loadPostForEditing = useCallback(async (id: string): Promise<void> => {
+  // *** NOUVEAU: Implémentation de loadPostForEditing ***
+  const loadPostForEditing = async (postId: string): Promise<void> => {
+    setLoading(true); setError(null); setCurrentEditingPostId(postId);
     try {
-      const fetchedPost = await PostService.getById(id);
+      const fetchedPost = await PostService.getById(postId); // Assurez-vous que getById retourne PostData
+      if (fetchedPost) {
+        // Transformer les images si elles sont des strings (URLs) en Asset[] pour le picker
+        // Si votre API retourne déjà des Asset[], cette étape n'est pas nécessaire.
+        // Pour la simulation, je suppose que fetchedPost.images est déjà Asset[] ou compatible.
+        const imagesAsAssets: Asset[] = (fetchedPost.images || []).map((img: any, index: number) => {
+            if (typeof img === 'string') { // Si c'est une URL
+                return { uri: img, fileName: `image_${index}.jpg`, type: 'image/jpeg' }; // Créez un Asset basique
+            }
+            return img; // Si c'est déjà un objet Asset-like
+        });
 
-      setPostData({
-        ...initialPostData, // Commence avec les valeurs par défaut pour s'assurer que toutes les clés sont présentes
-        ...fetchedPost,     // Écrase avec les données récupérées
-        images: fetchedPost.images || [], // S'assure que images est un tableau
-      });
-    } catch (error) {
-      console.error(`Erreur lors du chargement du post ${id} pour édition:`, error);
-      throw error;
+        setPostData({
+          ...initialPostDataState, // Base pour les champs non présents
+          ...fetchedPost,
+          id: postId, // S'assurer que l'ID est bien celui du post édité
+          // Convertir les champs numériques en string pour les inputs
+          price: String(fetchedPost.price || ''),
+          bedroom: String(fetchedPost.bedroom || ''),
+          bathroom: String(fetchedPost.bathroom || ''),
+          images: imagesAsAssets,
+        });
+      } else {
+        throw new Error("Post non trouvé");
+      }
+      setLoading(false);
+    } catch (e: any) {
+      console.error(`Erreur loadPostForEditing (ID: ${postId}):`, e);
+      setError(e.message || `Erreur chargement post ${postId}.`);
+      setLoading(false);
+      setCurrentEditingPostId(null);
+      throw e;
     }
-  }, []); // initialPostData est stable, donc pas besoin de le lister comme dépendance s'il est défini en dehors du composant.
+  };
+
+  const removePost = async (id: string): Promise<any> => {
+    setLoading(true); setError(null);
+    try {
+      const response = await PostService.remove(id); setLoading(false); return response;
+    } catch (e: any) { setError(e.message || `Erreur suppression post ${id}.`); setLoading(false); throw e; }
+  };
 
 
-  // Valeurs fournies par le contexte à ses consommateurs
   const value: PostDataContextType = {
-    postData,
-    updatePostData,
-    setCoordinates,
-    setImages,
-    clearPostData,
-    getAllPosts,
-    getPostById,
-    getPostByUser,
-    getPostsByProperty,
-    getPostsByType,
-    searchPosts,
-    addPost,
-    updatePost,
-    removePost,
-    loadPostForEditing,
+    postData, updatePostData, setCoordinates, setImages, clearPostData, searchPosts, getPostsByProperty, getPostsByType,
+    addPost, updatePost, getAllPosts, getPostById, getPostByUser, loadPostForEditing, removePost,
+    loading, error, currentEditingPostId, setCurrentEditingPostId,
   };
 
   return (

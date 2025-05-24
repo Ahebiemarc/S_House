@@ -1,6 +1,4 @@
-import axios from "axios";
 import { API } from "./root.api";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LoginData, RegisterData } from "../../domain/interface/Auth.interface";
 
 

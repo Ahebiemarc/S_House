@@ -1,6 +1,8 @@
 // Écran pour saisir les informations générales, les pièces et les images (TypeScript)
 
-import React from 'react';
+//screen/detailPost.tsx
+
+import React, { useEffect } from 'react';
 import { View, StyleSheet, ScrollView, Alert, Image, FlatList, TouchableOpacity } from 'react-native'; // Ajout de Image, FlatList, TouchableOpacity
 import { TextInput, Button, Text, RadioButton, Card, Title, IconButton } from 'react-native-paper'; // Ajout de IconButton
 import { Picker } from '@react-native-picker/picker';
@@ -14,13 +16,54 @@ import ProtectedRoute from '../../application/routes/Protected.route';
 // Définir les props pour cet écran
 type DetailProps = StackScreenProps<RootStackParamList, 'DetailsAddPost'>;
 
-const DetailsAddPost: React.FC<DetailProps> = ({ navigation }) => {
-  const { postData, updatePostData, setImages } = usePostData(); // Obtenir setImages du contexte
+const DetailsAddPost: React.FC<DetailProps> = ({ navigation, route }) => {
+  const { postId } = route.params || {}; // Récupérer postId s'il existe
+  const { postData, updatePostData, setImages, loadPostForEditing, clearPostData, setCurrentEditingPostId, currentEditingPostId } = usePostData();
+
+
+  // Charger les données du post si postId est fourni (mode édition)
+  /*useEffect(() => {
+    if (postId) {
+      setCurrentEditingPostId(postId); // Indiquer qu'on est en mode édition
+      loadPostForEditing(postId).catch(err => {
+          Alert.alert("Erreur", "Impossible de charger les données du post pour modification.");
+          navigation.goBack(); // Revenir en arrière si le chargement échoue
+      });
+    } else {
+
+      if(currentEditingPostId) { // Si on vient d'un mode édition annulé
+          clearPostData();
+      }
+      setCurrentEditingPostId(null);
+    }
+    // Nettoyage au démontage si on quitte le mode édition sans sauvegarder
+    return () => {
+        // Si on quitte cet écran et qu'on était en mode édition,
+        // on pourrait vouloir nettoyer postData si la sauvegarde n'a pas eu lieu.
+        // Mais clearPostData ici pourrait être trop agressif si on navigue vers LocationScreen.
+        // La gestion du "reset" est mieux gérée après soumission ou annulation explicite.
+    };
+  }, [postId, loadPostForEditing, navigation, clearPostData, setCurrentEditingPostId]);*/
+
+  useEffect(() => {
+    if (postId) { // ou un autre champ de contrôle pour éviter le rechargement
+      setCurrentEditingPostId(postId);
+      loadPostForEditing(postId).catch(err => {
+        Alert.alert("Erreur", "Impossible de charger les données du post pour modification.");
+        navigation.goBack();
+      });
+    } else {
+      if(currentEditingPostId) {
+        clearPostData();
+      }
+      setCurrentEditingPostId(null);
+    }
+  }, [postId]);
 
   // Gérer la navigation vers l'écran suivant
   const handleNext = (): void => {
     if (postData.title && postData.price && postData.bedroom && postData.bathroom) {
-      navigation.navigate('LocationAddPost');
+      navigation.navigate('LocationAddPost', {postId});
     } else {
       Alert.alert('Champs requis', 'Veuillez remplir tous les champs requis (Titre, Prix, Chambres, Salles de bain).');
     }
@@ -28,47 +71,41 @@ const DetailsAddPost: React.FC<DetailProps> = ({ navigation }) => {
 
   // *** Nouveau: Fonction pour ouvrir la galerie d'images ***
   const handleChoosePhotos = () => {
-    const options: ImageLibraryOptions = {
-      mediaType: 'photo',
-      quality: 0.8, // Réduire la qualité pour économiser de l'espace
-      selectionLimit: 0, // 0 signifie pas de limite (sélection multiple)
-    };
-
+    const options: ImageLibraryOptions = { mediaType: 'photo', quality: 0.8, selectionLimit: 0 };
     launchImageLibrary(options, (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.errorCode) {
-        console.log('ImagePicker Error: ', response.errorMessage);
-        Alert.alert('Erreur', "Impossible de charger les images.");
-      } else if (response.assets && response.assets.length > 0) {
-        // Extraire les URIs des assets sélectionnés
-        const selectedUris = response.assets.map((asset: Asset) => asset.uri).filter((uri): uri is string => !!uri);
-        // Mettre à jour le contexte avec les nouvelles images (concaténer avec les existantes si besoin, ici on remplace)
-        // Pour ajouter aux images existantes: setImages([...propertyData.images, ...selectedUris]);
-        setImages(selectedUris);
+      if (response.didCancel) { console.log('Picker annulé'); }
+      else if (response.errorCode) { Alert.alert('Erreur', response.errorMessage || "Erreur images."); }
+      else if (response.assets && response.assets.length > 0) {
+        // En mode édition, on peut vouloir ajouter aux images existantes ou remplacer.
+        // Pour l'instant, on remplace toutes les images par la nouvelle sélection.
+        // Pour ajouter : 
+        setImages([...postData.images, ...response.assets]);
+        //setImages(response.assets);
       }
     });
   };
 
   // *** Nouveau: Fonction pour supprimer une image de l'aperçu ***
-  const handleRemoveImage = (uriToRemove: string) => {
-      const updatedImages = postData.images.filter((uri : string) => uri !== uriToRemove);
-      setImages(updatedImages);
-  }
+  const handleRemoveImage = (uriToRemove: string | undefined) => {
+    if (!uriToRemove) return;
+    const updatedImages = postData.images.filter(asset => asset.uri !== uriToRemove);
+    setImages(updatedImages);
+  };
 
   // *** Nouveau: Rendu d'un élément d'aperçu d'image ***
-  const renderImagePreview = ({ item }: { item: string }) => (
+  const renderImagePreview = ({ item }: { item: Asset }) => (
       <View style={styles.previewImageContainer}>
-          <Image source={{ uri: item }} style={styles.previewImage} />
+          <Image source={{ uri: item.uri }} style={styles.previewImage} />
           <IconButton
               icon="close-circle"
               iconColor="red"
               size={20}
-              onPress={() => handleRemoveImage(item)}
+              onPress={() => handleRemoveImage(item.uri)}
               style={styles.removeImageIcon}
           />
       </View>
   );
+  
 
   return (
     <ScrollView style={styles.container}>

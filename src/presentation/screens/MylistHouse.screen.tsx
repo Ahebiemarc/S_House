@@ -14,7 +14,6 @@ import { SwipeListView } from 'react-native-swipe-list-view';
 import { RootStackScreenProps } from '../../domain/types/route.types';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from "../../application/utils/constants/Color";
-import { Property, Type } from '../../domain/enum/post';
 import { PostData } from '../../domain/interface/Post.interface';
 import { usePostData } from '../../application/hooks/usePost';
 
@@ -103,6 +102,16 @@ const Screen: React.FC<Props> = ({route, navigation}) => {
           });
   }, []);
 
+  const handleEditPost = (postId: string | undefined) => {
+    if (!postId) {
+      Alert.alert("Erreur", "ID du post non disponible pour la modification.");
+      return;
+    }
+    // Naviguer vers DetailsScreen avec postId.
+    // DetailsScreen utilisera ce postId pour appeler loadPostForEditing.
+    navigation.navigate('DetailsAddPost', { postId: postId });
+  };
+
   if (isLoading ) { // Affiche le skeleton seulement au chargement initial si pas de posts
     return (
       <>
@@ -117,9 +126,10 @@ const Screen: React.FC<Props> = ({route, navigation}) => {
 
   // Rendu de chaque élément de la liste des posts
   const renderPostItem = (data: { item: PostData }, rowMap: any) => (
-    <View style={styles.postItemContainer}>
+    
+    <TouchableOpacity style={styles.postItemContainer} activeOpacity={0.9}  onPress={() => handleEditPost(data.item.id)}>
       <View style={styles.postItem}>
-        {/* Placeholder pour l'image du post */}
+        {/* Placeholder pour l'image du post */ }
           <Image source={{ uri: "https://res.cloudinary.com/dr6hkslkn/image/upload/v1743320456/gyhcazlzsysk8ocmhjif.jpg" }} style={styles.postImage} />
 
         <View style={styles.postInfo}>
@@ -142,7 +152,7 @@ const Screen: React.FC<Props> = ({route, navigation}) => {
           <Text style={styles.heartIcon}>❤️</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   // Rendu du bouton de suppression caché pour le swipe

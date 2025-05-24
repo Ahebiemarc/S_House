@@ -26,8 +26,6 @@ const Explore: React.FC<Props> = ({ navigation }) => {
   const [currentCategory, setCurrentCategory] = useState<string>('All'); 
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
-  // geoItems pour la carte, si vous les utilisez toujours
-  const geoItems = useMemo(() => listingsDataGeo as any, []);
 
   const fetchAllPosts = useCallback(async () => {
     try {

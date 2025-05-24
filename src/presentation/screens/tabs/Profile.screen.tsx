@@ -125,7 +125,7 @@ const Profile: React.FC<Props> = ({navigation}) => {
 
             <View style={{justifyContent: 'center', padding: 20,}}>
                 {/*<AddBtnListing data={listPost} />*/}
-                <TouchableOpacity style={{flexDirection:'row', alignSelf: 'flex-end', marginVertical: 20, justifyContent: 'center',}} onPress={() => navigation.navigate('DetailsAddPost')}>
+                <TouchableOpacity style={{flexDirection:'row', alignSelf: 'flex-end', marginVertical: 20, justifyContent: 'center',}} onPress={() => navigation.navigate('DetailsAddPost' , {})}>
                     <Text style={{fontFamily: 'Poppins-SemiBold', fontSize:18, color: Colors.primary ,marginHorizontal: 5}}>Ajouter </Text>
                     <Ionicons name="add" size={24} color={Colors.primary} />
                 </TouchableOpacity>
@@ -134,7 +134,7 @@ const Profile: React.FC<Props> = ({navigation}) => {
                     <MaterialCommunityIcons name="logout" size={24} color={Colors.primary} />
                 </TouchableOpacity>
                 <TouchableOpacity style={{flexDirection:'row', alignSelf: 'flex-end', marginVertical: 20, justifyContent: 'center', }}  onPress={() => navigation.navigate('MyListHouse')}>
-                    <Text style={{fontFamily: 'Poppins-SemiBold', fontSize:18, color: Colors.primary, marginHorizontal: 5,textAlign: 'center' }}>Voir mes maisons</Text>
+                    <Text style={{fontFamily: 'Poppins-SemiBold', fontSize:18, color: Colors.primary, marginHorizontal: 5,textAlign: 'center' }}>Mes maisons</Text>
                     <MaterialCommunityIcons name="eye" size={24} color={Colors.primary} />
                 </TouchableOpacity>
             </View>

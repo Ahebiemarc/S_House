@@ -17,7 +17,7 @@ const SignUp = () =>{
     const { register } = useAuth();
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-    const handleLogin = async () => {
+    const handleRegister = async () => {
         if (!username || !password || !email) {
             Alert.alert('Erreur', 'Veuillez remplir tous les champs.');
             return;
@@ -59,7 +59,7 @@ const SignUp = () =>{
 
             />
 
-        <TouchableOpacity style={defaultStyles.btn}>
+        <TouchableOpacity style={defaultStyles.btn} onPress={handleRegister}>
             {loading ? (
                         <ActivityIndicator color={Colors.white} />
                       ) : (
