@@ -76,9 +76,7 @@ const DetailsAddPost: React.FC<DetailProps> = ({ navigation, route }) => {
       if (response.didCancel) { console.log('Picker annulé'); }
       else if (response.errorCode) { Alert.alert('Erreur', response.errorMessage || "Erreur images."); }
       else if (response.assets && response.assets.length > 0) {
-        // En mode édition, on peut vouloir ajouter aux images existantes ou remplacer.
-        // Pour l'instant, on remplace toutes les images par la nouvelle sélection.
-        // Pour ajouter : 
+         
         setImages([...postData.images, ...response.assets]);
         //setImages(response.assets);
       }

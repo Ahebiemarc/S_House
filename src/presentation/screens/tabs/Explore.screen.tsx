@@ -17,7 +17,7 @@ import { Property } from "../../../domain/enum/post";
 
 type Props = TabStackScreenProps<'Explore'>;
 
-const Explore: React.FC<Props> = ({ navigation }) => {
+const Explore: React.FC<Props> = ({ navigation, route }) => {
   const { getAllPosts, getPostsByProperty } = usePostData();
   const [posts, setPosts] = useState<PostData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -72,7 +72,13 @@ const Explore: React.FC<Props> = ({ navigation }) => {
     } else {
         fetchPostsByCategory(currentCategory);
     }
-  }, [fetchAllPosts, fetchPostsByCategory, currentCategory]); // Dépendance à currentCategory
+
+    
+
+      // On nettoie le paramètre `refresh` pour éviter des appels futurs
+      navigation.setParams({ refresh: false });
+    
+  }, [fetchAllPosts, fetchPostsByCategory, currentCategory, route.params?.refresh]); // Dépendance à currentCategory
 
   const onCategoryChanged = (category: Property) => {
     console.log("Nouvelle catégorie sélectionnée: " + category);

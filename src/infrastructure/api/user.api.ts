@@ -1,10 +1,11 @@
 import { API } from './root.api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UserUpdateData } from '../../domain/interface/User.interface';
+import { UserProfileUpdateData } from '../../domain/interface/User.interface';
+import { Asset } from 'react-native-image-picker';
 
 const UserService = {
   // PUT : mise à jour d'un utilisateur
-  update: async (id: string, data: UserUpdateData, avatar?: any) => {
+  update: async (id: string, data: UserProfileUpdateData, avatar?: Asset) => {
     const token = await AsyncStorage.getItem('token');
     const formData = new FormData();
 
@@ -17,7 +18,7 @@ const UserService = {
     if (avatar) {
       formData.append('avatar', {
         uri: avatar.uri,
-        name: avatar.name || 'avatar.jpg',
+        name: avatar.fileName || `photo.jpg`,
         type: avatar.type || 'image/jpeg',
       });
     }

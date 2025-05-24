@@ -1,16 +1,15 @@
-import {Image, ImageSourcePropType, ListRenderItem, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
-import * as Btn  from "../../components/Button.component";
+import {Image, ListRenderItem, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { TabStackScreenProps } from "../../../domain/types/route.types";
 import React, { useEffect, useMemo, useState } from "react";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { defaultStyles } from "../../../application/utils/constants/Styles";
 import Colors from "../../../application/utils/constants/Color";
-import listingsData from '../../assets/data/airbnb-listings.json';
 import ApartmentItem from "../../components/ApartmentItem.component";
 import ProtectedRoute from "../../../application/routes/Protected.route";
 import { useAuth } from "../../../application/hooks/useAuth";
 import { Alert } from "react-native";
+import { UserProvider, useUser } from "../../../application/hooks/useUser";
 
 
 const defautProfile = require('../../../presentation/assets/images/defautProfile.png');
@@ -22,29 +21,16 @@ type Props = TabStackScreenProps<'Profile'>
 
 const Profile: React.FC<Props> = ({navigation}) => {
 
-    //const [listPost, setListPost] = useState<Array<any>>(images);
 
-    const items = useMemo(() => listingsData as any, []);    
-    const [edit, setEdit] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const { logout, user } = useAuth();
-    console.log(user?.user);
-    
+    const { logout, user: authUser } = useAuth(); // authUser peut être légèrement obsolète après une màj via UserProvider
+    const { currentUser } = useUser(); // << Utilise currentUser de UserProvider pour l'affichage    console.log(user?.user);
 
-    const snapPoints = useMemo(() => ['25%', '50%', '90%'], []);
-    
-
-
-    /*useEffect(() => {
-
-        setListPost(listPost);
-    }, [listPost ]);*/
+    const displayUser = currentUser || authUser?.user;
 
     const handleLogout = () => {
-        // Add confirmation alert
          Alert.alert(
              "Déconnexion", // Title
-             "Êtes-vous sûr de vouloir vous déconnecter ?", // Message
+             "Êtes-vous sûr de vouloir vous déconnecter ?",
              [
                  {
                      text: "Annuler",
@@ -54,26 +40,13 @@ const Profile: React.FC<Props> = ({navigation}) => {
                      text: "Déconnexion",
                      onPress: () => {
                          logout();
-                         // Navigation handled by RootLayoutNav effect
                      },
-                     style: "destructive" // Red color for logout action on iOS
+                     style: "destructive"
                  }
              ]
          );
       };
 
-
-
-
-    const renderItem : ListRenderItem<any> = ({item}) => {
-        //console.log(item);
-        //console.log(1);
-        
-        
-        return(
-            <ApartmentItem listing={item} />
-        )
-    }
 
 
     return(
@@ -84,47 +57,27 @@ const Profile: React.FC<Props> = ({navigation}) => {
                 
             </View>
 
-            {user?.user && (
+            {displayUser && (
                 <View style={styles.card}>
                     <TouchableOpacity activeOpacity={0.8}  >
-                        <Image source={user?.user.avatar ? {uri: user?.user.avatar} : defautProfile } style={styles.avatar} />
+                        <Image source={displayUser.avatar ? {uri: displayUser.avatar} : defautProfile } style={styles.avatar} />
                     </TouchableOpacity>
                     <View style={{flexDirection: 'row', gap:6}}>
-                        {/*edit ? (
                             <View style={styles.editRow}>
-                                <TextInput
-                                    placeholder="First Name"
-                                    value={username || ''}
-                                    onChangeText={setUesername}
-                                    style={[defaultStyles.inputField, { width: 100 }]}
-                               />
-                                <TextInput
-                                    placeholder="Last Name"
-                                    value={email || ''}
-                                    onChangeText={setEmail}
-                                    style={[defaultStyles.inputField, { width: 100 }]}
-                                />
-                                <TouchableOpacity onPress={onSaveUser} style={[{borderRadius: 5, borderWidth: 1}]}>
-                                        <Ionicons name="checkmark-outline" size={24} color={Colors.dark} />
-                                </TouchableOpacity>
-                            </View>
-                        ) : */}
-                            <View style={styles.editRow}>
-                                <Text style={{fontFamily:'Poppins-Bold', fontSize:22}}>{user?.user.username}</Text>
-                                <TouchableOpacity onPress={()=> setEdit(true)}>
+                                <Text style={{fontFamily:'Poppins-Bold', fontSize:22}}>{displayUser.username}</Text>
+                                <TouchableOpacity onPress={() => navigation.navigate('UpdateProfile')}>
                                     <Ionicons name="create-outline" size={24} color={Colors.dark} />
                                 </TouchableOpacity>
                             </View>
                         
                     </View>
-                    <Text style={{fontFamily:'Poppins-Regular', fontSize:16, color:Colors.grey}}>{user?.user.email}</Text>
+                    <Text style={{fontFamily:'Poppins-Regular', fontSize:16, color:Colors.grey}}>{displayUser.email}</Text>
                 </View>
             )}
 
             
 
             <View style={{justifyContent: 'center', padding: 20,}}>
-                {/*<AddBtnListing data={listPost} />*/}
                 <TouchableOpacity style={{flexDirection:'row', alignSelf: 'flex-end', marginVertical: 20, justifyContent: 'center',}} onPress={() => navigation.navigate('DetailsAddPost' , {})}>
                     <Text style={{fontFamily: 'Poppins-SemiBold', fontSize:18, color: Colors.primary ,marginHorizontal: 5}}>Ajouter </Text>
                     <Ionicons name="add" size={24} color={Colors.primary} />
@@ -210,9 +163,9 @@ const styles = StyleSheet.create({
 
 export default function ProtectedProfile(props: Props) {
     return (
-      <ProtectedRoute>
-        <Profile {...props} />
-      </ProtectedRoute>
+        <ProtectedRoute>
+            <Profile {...props} />
+        </ProtectedRoute>
     );
 }
 

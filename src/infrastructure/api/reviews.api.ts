@@ -1,3 +1,4 @@
+//services/reviews.api.ts
 import { API } from './root.api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ReviewData } from '../../domain/interface/Review.interface';
@@ -5,20 +6,21 @@ import { ReviewData } from '../../domain/interface/Review.interface';
 const ReviewService = {
   // 🔍 Obtenir une review par ID
   get: async (id: string) => {
-    const res = await API.get(`/review/${id}`);
+    const res = await API.get(`/reviews/${id}`);
     return res.data;
   },
 
   // 🔍 Obtenir toutes les reviews pour un post spécifique
   getAllByPost: async (postId: string) => {
-    const res = await API.get(`/review/post/${postId}`);
+    console.log(postId);
+    const res = await API.get(`/reviews/post/${postId}`);
     return res.data;
   },
 
   // 🔍 Obtenir toutes les reviews de l'utilisateur courant
   getAllByUser: async () => {
     const token = await AsyncStorage.getItem('token');
-    const res = await API.get(`/review/user`, {
+    const res = await API.get(`/reviews/user`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -29,7 +31,7 @@ const ReviewService = {
   // ➕ Ajouter une review pour un post
   add: async (postId: string, review: ReviewData) => {
     const token = await AsyncStorage.getItem('token');
-    const res = await API.post(`/review/${postId}`, review, {
+    const res = await API.post(`/reviews/${postId}`, review, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -40,7 +42,7 @@ const ReviewService = {
   // ✏️ Mettre à jour une review
   update: async (id: string, review: ReviewData) => {
     const token = await AsyncStorage.getItem('token');
-    const res = await API.put(`/review/${id}`, review, {
+    const res = await API.put(`/reviews/${id}`, review, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -51,7 +53,7 @@ const ReviewService = {
   // ❌ Supprimer une review
   delete: async (id: string) => {
     const token = await AsyncStorage.getItem('token');
-    const res = await API.delete(`/review/${id}`, {
+    const res = await API.delete(`/reviews/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

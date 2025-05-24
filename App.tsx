@@ -18,6 +18,7 @@ import { AuthProvider } from './src/application/hooks/useAuth';
 import { DefaultTheme, PaperProvider } from 'react-native-paper';
 import { PostProvider } from './src/application/hooks/usePost';
 import { FavoritesProvider } from './src/application/hooks/useFavorites';
+import { UserProvider } from './src/application/hooks/useUser';
 
 
 // Thème pour react-native-paper (optionnel)
@@ -47,13 +48,15 @@ function App(): React.JSX.Element {
             
           />
           <AuthProvider>
+           <UserProvider>
             <PostProvider>
-              <FavoritesProvider>
-                <NavigationContainer>
-                    <RootNavigator />
-                </NavigationContainer>
-              </FavoritesProvider>
-            </PostProvider>
+                <FavoritesProvider>
+                  <NavigationContainer>
+                      <RootNavigator />
+                  </NavigationContainer>
+                </FavoritesProvider>
+              </PostProvider>
+           </UserProvider>
             
           </AuthProvider>
       </PaperProvider>

@@ -20,8 +20,6 @@ export type RootStackParamList = {
     Onboarding: undefined;
     Login: undefined;
     Signup: undefined;
-    EditProfile: undefined;
-    EditApartment: undefined;
     MyApartmentList: undefined;
     Booking: undefined;
     Listing: {post: PostData};
@@ -37,6 +35,9 @@ export type RootStackParamList = {
     };
     //SharedElementStack: NavigatorScreenParams<SharedElementStackParamList>;
     MyListHouse: undefined
+    ReviewsWrapper: { postId: string }; // Écran wrapper pour le provider
+    AddReview: { postId: string };
+    UpdateProfile: undefined;
 
 
 }
@@ -49,7 +50,7 @@ export type TabStackParamList = {
     Profile: undefined;
     Wishlist: undefined;
     Inbox: undefined;
-    Explore: undefined;
+    Explore: { refresh: boolean } | undefined;
 }
 
 

@@ -146,11 +146,7 @@ const Screen: React.FC<Props> = ({route, navigation}) => {
             </TouchableOpacity>
           </View>
         </View>
-        <TouchableOpacity
-          style={styles.heartIconContainer}
-          onPress={() => fetchDeletePost(data.item.id!)}>
-          <Text style={styles.heartIcon}>❤️</Text>
-        </TouchableOpacity>
+
       </View>
     </TouchableOpacity>
   );

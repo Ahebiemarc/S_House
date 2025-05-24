@@ -15,6 +15,9 @@ import DetailsAddPost from "../../presentation/screens/DetailsAddPost.screen";
 import LocationAddPost from "../../presentation/screens/LocationAddPost.screen";
 import MapAddPost from "../../presentation/screens/MapAddPost.screen";
 import Message from "../../presentation/screens/Message.screen";
+import ReviewsScreen from "../../presentation/screens/modals/Reviews.modal";
+import AddReviewScreen from "../../presentation/screens/modals/AddReview.modal";
+import UpdateProfile from "../../presentation/screens/modals/UpdateProfile.modal";
 
 const {height, width} = Dimensions.get('window');
 
@@ -36,7 +39,7 @@ const RootNavigator = () => {
     return(
             <RootStack.Navigator initialRouteName="Tab">
                 <RootStack.Group>
-                    <RootStack.Screen name="Tab" component={TabNavigator} options={{headerShown: false}} />
+                    <RootStack.Screen name="Tab" component={TabNavigator} options={{headerShown: false,}} />
                     <RootStack.Screen name="Listing" component={Listing} options={{headerTitle: '', headerTransparent: true}}/>
                     <RootStack.Screen name="DetailsAddPost" component={DetailsAddPost} options={{ title: 'Informations Propriété' }} />
                     <RootStack.Screen name="LocationAddPost" component={LocationAddPost} options={{ title: 'Localisation' }}/>
@@ -105,6 +108,7 @@ const RootNavigator = () => {
                         }}
                                         
                     />
+                    
 
                     <RootStack.Screen name="Map" component={ListingsMaps}
                         options={{
@@ -119,6 +123,73 @@ const RootNavigator = () => {
                         }}
                         
                     />
+                    
+                </RootStack.Group>
+                <RootStack.Group 
+                    screenOptions={({navigation }) => ({
+                        presentation: 'modal', 
+                        headerShown: true,
+                        headerStyle:{
+                            backgroundColor: 'transparent',
+                        },
+                        //headerTintColor: 'white',
+                        gestureEnabled: true,
+                        ...TransitionPresets.ModalPresentationIOS,
+                        headerLeft: () =>(
+                            <TouchableOpacity activeOpacity={0.7} style={{marginLeft: 10}} onPress={() => navigation.goBack()}>
+                                <Ionicons name="close-outline" size={35} />
+                            </TouchableOpacity>
+                        )
+                    })}
+                >
+                    
+                    <RootStack.Screen name="AddReview" component={AddReviewScreen}
+                                        
+                        options={{
+                            headerTitle: 'Évaluer et commenter',
+                            headerTitleStyle: {
+                                textAlign: 'center',
+                                marginLeft: width * 0.1,
+                                fontFamily: 'Poppins-Medium',
+                                fontSize: 18
+                            }
+
+                        }}
+                                        
+                    />
+                    <RootStack.Screen name="UpdateProfile" component={UpdateProfile}
+                                        
+                        options={{
+                            headerTitle: 'Modifier son profil',
+                            headerTitleStyle: {
+                                textAlign: 'center',
+                                marginLeft: width * 0.15,
+                                fontFamily: 'Poppins-Medium',
+                                fontSize: 18
+                            }
+
+                        }}
+                                        
+                    />
+                    <RootStack.Screen name="ReviewsWrapper" component={ReviewsScreen}
+                                        
+                        options={{
+                            headerTitle: 'Avis',
+                            headerTitleStyle: {
+                                textAlign: 'center',
+                                marginLeft: width * 0.29,
+                                fontFamily: 'Poppins-Medium',
+                                fontSize: 18
+                            }
+
+                        }}
+                                        
+                    />
+                    
+
+                    
+
+                    
                     
                 </RootStack.Group>
 

@@ -1,33 +1,4 @@
-/*
-import { View, Text, ScrollView, FlatList } from 'react-native';
-import chats from '../../../presentation/assets/data/chats.json';
-import ChatRow from '../../components/ChatRow';
-import { defaultStylesChat } from '../../../application/utils/constants/Styles';
 
-const Inbox = () => {
-  return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{ paddingBottom: 40, backgroundColor: '#fff' }}>
-      <FlatList
-        data={chats}
-        renderItem={({ item }) => <ChatRow {...item} />}
-        keyExtractor={(item) => item.id.toString()}
-        ItemSeparatorComponent={() => (
-          <View style={[defaultStylesChat.separator, { marginLeft: 90 }]} />
-        )}
-        scrollEnabled={false}
-
-      />
-      
-    </ScrollView>
-  );
-};
-export default Inbox
-*/
-
-
-// Importer les dépendances nécessaires
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
@@ -36,18 +7,14 @@ import {
   TextInput,
   TouchableOpacity,
   SafeAreaView,
-  Alert,
   Dimensions,
   ListRenderItem,
 } from 'react-native';
-import {  RouteProp } from '@react-navigation/native';
-import { NavigationProp } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
-// Assurez-vous d'importer 'react-native-gesture-handler' au début de votre fichier d'entrée (index.js ou App.js)
 import 'react-native-gesture-handler';
 import ChatItem from '../../components/ChatItem';
 import { StyleSheet } from 'react-native';
-import { RootStackParamList, TabStackScreenProps } from '../../../domain/types/route.types';
+import { TabStackScreenProps } from '../../../domain/types/route.types';
 import { Chat } from '../../../domain/interface/Message';
 import ProtectedRoute from '../../../application/routes/Protected.route';
 

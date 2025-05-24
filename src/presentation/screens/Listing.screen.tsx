@@ -122,6 +122,15 @@ const Listing:React.FC<Props> = ({route, navigation}) => {
     const averageRating = posts.reviews.length > 0
     ? posts.reviews.reduce((sum:number, review:any) => sum + review.rating, 0) / posts.reviews.length
     : 0;
+
+    const handleNavigateToReviews = () => {
+      if (posts.id) {
+          navigation.navigate('ReviewsWrapper', { postId: posts.id });
+      } else {
+          console.warn("Post ID is undefined, cannot navigate to reviews.");
+          Alert.alert("Erreur", "Impossible d'afficher les avis pour ce post car son ID est manquant.");
+      }
+    };
     
     
     return(
@@ -148,12 +157,29 @@ const Listing:React.FC<Props> = ({route, navigation}) => {
                         {posts.bedroom} Chambres ·{' '}
                         {posts.bathroom} Salle de bain
                     </Text>
-                    <View style={{ flexDirection: 'row', gap: 4 }}>
+                    {/*<View style={{ flexDirection: 'row', gap: 4 }}>
                         <Ionicons name="star" size={16} />
                         <Text style={styles.ratings}>
                         {averageRating !== 0  ? averageRating : 'N/A'} · <Text style={{textDecorationLine: 'underline'}}>{posts.reviews.length} avis</Text>
                         </Text>
+                    </View>*/}
+                    {/* MODIFICATION ICI pour la navigation des avis */}
+                    <View style={styles.ratingContainer}>
+                        <Ionicons name="star" size={16} color={Colors.grey} />
+                        <Text style={styles.ratings}>
+                            {/* Affiche la note moyenne et le séparateur "·" conditionnellement */}
+                            {`${averageRating !== 0 ? averageRating.toFixed(1) : 'N/A'}${posts.reviews && posts.reviews.length >= 0 ? ' · ' : ''}`}
+                        </Text>
+                        {/* Affiche le lien vers les avis seulement si posts.reviews est défini (même pour 0 avis) */}
+                        {posts.reviews && posts.reviews.length >= 0 && (
+                            <TouchableOpacity onPress={handleNavigateToReviews}>
+                                <Text style={[styles.ratings, styles.reviewLink]}>
+                                    {`${posts.reviews.length} avis`}
+                                </Text>
+                            </TouchableOpacity>
+                        )}
                     </View>
+                    {/* Fin de la modification */}
                     <View style={styles.divider} />
 
                     <View style={styles.hostView}>
@@ -219,9 +245,20 @@ const styles = StyleSheet.create({
         marginVertical: 4,
         fontFamily: 'Poppins-Medium',
       },
-      ratings: {
+      ratings: { // Style de base pour le texte des notes/avis
         fontSize: 16,
-        fontFamily: 'Poppins-SemiBold',
+        fontFamily: 'Poppins-SemiBold', // ou Poppins-Medium selon la préférence
+        color: Colors.grey, // Une couleur pour le texte
+      },
+      ratingContainer: { // Nouveau conteneur pour aligner étoile, note et lien avis
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4, // Espace entre les éléments
+      },
+      reviewLink: { // Style spécifique pour le lien "X avis"
+        textDecorationLine: 'underline',
+        color: Colors.primary, // Optionnel: une couleur distincte pour le lien
+        fontFamily: 'Poppins-SemiBold', // Garder la même police ou ajuster
       },
       divider: {
         height: StyleSheet.hairlineWidth,
