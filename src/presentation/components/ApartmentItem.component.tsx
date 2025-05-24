@@ -25,10 +25,13 @@ const ApartmentItem : React.FC<Props> = ({listing, containerStyle={}, Onpress}) 
         ? data.reviews.reduce((sum:number, review:any) => sum + review.rating, 0) / data.reviews.length
         : 0;
     
+    console.log(data.images[0]);
+    
+    
     return(
         <View style={[styles.card, containerStyle]}>
             <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center'}} activeOpacity={0.9} onPress={Onpress}>
-            <Image source={{uri: data.images[0].uri || defaultImage}} style={styles.images} />
+            <Image source={{uri: data.images[0] as any || defaultImage}} style={styles.images} />
             <View style={styles.rightContainer}>
                 <Text style={styles.title}>{truncateText(data.title, 30)}</Text>
                 <Text style={styles.desc}>{truncateText(data.desc, 30)}</Text>

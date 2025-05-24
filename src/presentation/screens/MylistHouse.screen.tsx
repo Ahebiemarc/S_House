@@ -130,7 +130,7 @@ const Screen: React.FC<Props> = ({route, navigation}) => {
     <TouchableOpacity style={styles.postItemContainer} activeOpacity={0.9}  onPress={() => handleEditPost(data.item.id)}>
       <View style={styles.postItem}>
         {/* Placeholder pour l'image du post */ }
-          <Image source={{ uri: "https://res.cloudinary.com/dr6hkslkn/image/upload/v1743320456/gyhcazlzsysk8ocmhjif.jpg" }} style={styles.postImage} />
+          <Image source={{ uri: data.item.images[0] as any }} style={styles.postImage} />
 
         <View style={styles.postInfo}>
           <Text style={styles.postTitle}>{data.item.title}</Text>
