@@ -15,7 +15,7 @@ import { RootStackScreenProps } from '../../domain/types/route.types';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from "../../application/utils/constants/Color";
 import { PostData } from '../../domain/interface/Post.interface';
-import { usePostData } from '../../application/hooks/usePost';
+import { usePostData } from '../../application/providers/PostContext';
 
 
 
@@ -41,8 +41,6 @@ const PostSkeleton = () => (
 type Props = RootStackScreenProps<'MyListHouse'>
 
 const Screen: React.FC<Props> = ({route, navigation}) => {
-  //const { items } = route.params;
-  //const [userPosts, setuserPosts] = useState<UserPost[]>(items);
   const [userPosts, setuserPosts] = useState<PostData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const {getPostByUser, removePost} = usePostData()

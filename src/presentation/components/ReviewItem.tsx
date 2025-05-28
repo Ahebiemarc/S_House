@@ -8,7 +8,7 @@ interface ReviewItemProps {
   review: Review;
 }
 
-const formatDate = (dateString: string): string => {
+export const formatDate = (dateString: string): string => {
     if (!dateString) return '';
     if (dateString.includes('il y a')) return dateString;
   

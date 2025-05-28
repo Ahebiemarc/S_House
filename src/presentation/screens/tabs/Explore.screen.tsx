@@ -10,7 +10,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../../application/utils/constants/Color'
 
 import listingsDataGeo from '../../assets/data/airbnb-listings.geo.json'
-import { usePostData } from "../../../application/hooks/usePost";
+import { usePostData } from "../../../application/providers/PostContext";
 import { PostData } from "../../../domain/interface/Post.interface";
 import { Property } from "../../../domain/enum/post";
 

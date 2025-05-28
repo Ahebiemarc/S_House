@@ -1,4 +1,4 @@
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../providers/AuthContext';
 import { View, ActivityIndicator } from 'react-native';
 import { NavigationProp, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';

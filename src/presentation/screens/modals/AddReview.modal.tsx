@@ -13,7 +13,7 @@ import {
   Platform,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { ReviewProvider, useReviews } from '../../../application/hooks/useReview';
+import { ReviewProvider, useReviews } from '../../../application/providers/ReviewContext';
 import { StarRating } from '../../components/StarRating';
 import { RootStackScreenProps } from '../../../domain/types/route.types';
 import ProtectedRoute from '../../../application/routes/Protected.route';

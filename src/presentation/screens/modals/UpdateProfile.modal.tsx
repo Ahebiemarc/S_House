@@ -18,7 +18,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import Colors from '../../../application/utils/constants/Color';
 import { KeyboardAvoidingView } from 'react-native';
-import { useUser } from '../../../application/hooks/useUser';
+import { useUser } from '../../../application/providers/UserContext';
 import { UserProfileUpdateData } from '../../../domain/interface/User.interface';
 import { RootStackScreenProps } from '../../../domain/types/route.types';
 import { defaultStyles } from "../../../application/utils/constants/Styles";
@@ -32,26 +32,29 @@ type Props = RootStackScreenProps<'UpdateProfile'>
 const UpdateProfile: FC<Props> = ({navigation,}) => {
   const { currentUser, updateUserProfile, isLoading, error, clearError } = useUser();
 
+  console.log(currentUser?.user);
+  
+
   const [formData, setFormData] = useState<UserProfileUpdateData>({username: '', email: '', password: '',});
   const [selectedAvatar, setSelectedAvatar] = useState<Asset | null>(null);
   const [previewAvatar, setPreviewAvatar] = useState<string | undefined>(undefined);
 
 
   useEffect(() => {
-    if (currentUser) {
+    if (currentUser?.user) {
         setFormData({
-            username: currentUser.username || '',
-            email: currentUser.email || '',
+            username: currentUser.user.username || '',
+            email: currentUser.user.email || '',
             password: '',
         });
     
-      setPreviewAvatar(currentUser.avatar || undefined);
+      setPreviewAvatar(currentUser.user.avatar || undefined);
       setSelectedAvatar(null); // Réinitialiser l'avatar sélectionné à chaque ouverture
     }
     else { // Nettoyer l'erreur quand le modal est fermé
         clearError();
     }
-  }, [currentUser, clearError])
+  }, [currentUser?.user, clearError])
 
   const handlePickAvatar = () => {
 
@@ -78,16 +81,16 @@ const UpdateProfile: FC<Props> = ({navigation,}) => {
   };
 
   const handleSubmit = async () => {
-    if (!currentUser) return;
+    if (!currentUser?.user) return;
 
     const dataToUpdate: UserProfileUpdateData = {};
     let hasChanges = false;
 
-    if (formData.username?.trim() !== (currentUser.username || '')) {
+    if (formData.username?.trim() !== (currentUser.user.username || '')) {
       dataToUpdate.username = formData.username?.trim();
       hasChanges = true;
     }
-    if (formData.email?.trim() !== (currentUser.email || '')) {
+    if (formData.email?.trim() !== (currentUser.user.email || '')) {
       dataToUpdate.email = formData.email?.trim();
       hasChanges = true;
     }
@@ -169,7 +172,7 @@ const UpdateProfile: FC<Props> = ({navigation,}) => {
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
-              placeholder="Mot de passe actuel"
+              placeholder="Nouveau mot de passe"
               value={formData.password}
               onChangeText={(val) => handleInputChange('password', val)}
               secureTextEntry

@@ -14,6 +14,11 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import 'react-native-gesture-handler';
 import { PanGestureHandler, State, PanGestureHandlerGestureEvent, PanGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
 import { Alert } from 'react-native';
+import { AppChat } from '../../domain/interface/Message.interface';
+import { formatDate } from './ReviewItem';
+
+const defautProfile = require('../assets/images/defautProfile.png');
+
 
 // Définitions de Types TypeScript
 interface Message {
@@ -46,7 +51,7 @@ const SWIPE_THRESHOLD: number = -SCREEN_WIDTH * 0.2;
 
 // Props pour ChatItem
 interface ChatItemProps {
-    item: Chat;
+    item: AppChat;
     onPress: () => void;
     onDelete: (id: string) => void;
 }
@@ -139,12 +144,12 @@ const ChatItem: React.FC<ChatItemProps> = ({ item, onPress, onDelete }) => {
                         onPress={onPress}
                         activeOpacity={0.7}
                     >
-                        <Image source={{ uri: item.avatar }} style={styles.chatAvatar} />
+                        <Image source={ item.receiver.avatar ? { uri: item.receiver.avatar } : defautProfile} style={styles.chatAvatar} />
                         <View style={styles.chatItemTextContainer}>
-                            <Text style={styles.chatUserName}>{item.userName}</Text>
+                            <Text style={styles.chatUserName}>{item.receiver.username}</Text>
                             <Text style={styles.chatLastMessage} numberOfLines={1}>{item.lastMessage}</Text>
                         </View>
-                        <Text style={styles.chatTime}>{item.time}</Text>
+                        <Text style={styles.chatTime}>{formatDate(item.createdAt)}</Text>
                     </TouchableOpacity>
                 </Animated.View>
             </Animated.View>

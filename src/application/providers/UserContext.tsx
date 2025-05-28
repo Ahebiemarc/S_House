@@ -1,6 +1,6 @@
 // src/application/contexts/useUser.tsx
 import React, { createContext, useState, useContext, ReactNode, useEffect, useCallback } from 'react';
-import { useAuth } from './useAuth'; // Ajustez le chemin vers votre useAuth
+import { useAuth } from './AuthContext'; // Ajustez le chemin vers votre useAuth
 import {  User, UserProfileUpdateData } from '../../domain/interface/User.interface';
 import UserService from '../../infrastructure/api/user.api';
 import { Asset } from 'react-native-image-picker';
@@ -38,7 +38,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   useEffect(() => {
     if (authUser?.user) {
-      setCurrentUser(authUser.user as User); // Initialise currentUser avec les données de useAuth
+      setCurrentUser(authUser as User); // Initialise currentUser avec les données de useAuth
     } else {
       setCurrentUser(null);
     }
@@ -50,7 +50,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   const updateUserProfile = useCallback(
     async (data: UserProfileUpdateData, avatarFile?: Asset): Promise<boolean> => {
-      if (!currentUser || !currentUser.id) {
+      if (!currentUser?.user || !currentUser.user.id) {
         setError("Utilisateur non identifié pour la mise à jour.");
         return false;
       }
@@ -61,7 +61,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       try {
         // Préparation des données pour le service.
 
-        const updatedUserDataFromApi = await UserService.update(currentUser.id, data, avatarFile);
+        const updatedUserDataFromApi = await UserService.update(currentUser.user.id, data, avatarFile);
 
         if (updatedUserDataFromApi) {
           // Mettre à jour l'état local de UserProvider

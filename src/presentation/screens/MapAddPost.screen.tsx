@@ -7,7 +7,7 @@ import { View, StyleSheet, Dimensions, Alert } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE, Region, MapPressEvent, MarkerDragStartEndEvent } from 'react-native-maps';
 import { Button, ActivityIndicator, Text } from 'react-native-paper';
 import { StackScreenProps } from '@react-navigation/stack';
-import { usePostData } from '../../application/hooks/usePost';
+import { usePostData } from '../../application/providers/PostContext';
 import { RootStackParamList } from '../../domain/types/route.types';
 import ProtectedRoute from '../../application/routes/Protected.route';
 

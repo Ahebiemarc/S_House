@@ -5,7 +5,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../../domain/types/route.types";
 import { useState } from "react";
-import { useAuth } from "../../../application/hooks/useAuth";
+import { useAuth } from "../../../application/providers/AuthContext";
 
 
 

@@ -1,7 +1,7 @@
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { CompositeScreenProps, NavigatorScreenParams } from "@react-navigation/native"
 import { StackScreenProps } from "@react-navigation/stack";
-import { Message } from "../interface/Message";
+import { Message } from "../interface/Message.interface";
 import { PostData } from "../interface/Post.interface";
 
 
@@ -28,10 +28,11 @@ export type RootStackParamList = {
     LocationAddPost: { postId?: string };
     MapAddPost: { postId?: string };
     MessageScreen: {
-        chatId: string;
-        userName: string;
-        userAvatar: string;
-        initialMessages: Message[];
+        chatId: string,
+        userName: string,
+        userAvatar: string,
+        //initialMessages: Message[];
+        receiverId: string;
     };
     //SharedElementStack: NavigatorScreenParams<SharedElementStackParamList>;
     MyListHouse: undefined

@@ -14,7 +14,7 @@ import MyListHouse from "../../presentation/screens/MylistHouse.screen";
 import DetailsAddPost from "../../presentation/screens/DetailsAddPost.screen";
 import LocationAddPost from "../../presentation/screens/LocationAddPost.screen";
 import MapAddPost from "../../presentation/screens/MapAddPost.screen";
-import Message from "../../presentation/screens/Message.screen";
+import Messages from "../../presentation/screens/Message.screen";
 import ReviewsScreen from "../../presentation/screens/modals/Reviews.modal";
 import AddReviewScreen from "../../presentation/screens/modals/AddReview.modal";
 import UpdateProfile from "../../presentation/screens/modals/UpdateProfile.modal";
@@ -48,7 +48,7 @@ const RootNavigator = () => {
 
                     <RootStack.Screen
                     name="MessageScreen"
-                    component={Message}
+                    component={Messages}
                     options={{ // Dynamic options for header
                         headerTitleAlign: 'left', // Align title to the left
                         headerBackTitleVisible: false, // Hide "Back" text on iOS
@@ -74,7 +74,7 @@ const RootNavigator = () => {
                         ...TransitionPresets.ModalPresentationIOS,
                         headerLeft: () =>(
                             <TouchableOpacity activeOpacity={0.7} style={{marginLeft: 10}} onPress={() => navigation.navigate('Explore')}>
-                                <Ionicons name="close-outline" size={35} />
+                                <Ionicons name="close-outline" size={35} color="#000" />
                             </TouchableOpacity>
                         )
                     })}
@@ -137,7 +137,7 @@ const RootNavigator = () => {
                         ...TransitionPresets.ModalPresentationIOS,
                         headerLeft: () =>(
                             <TouchableOpacity activeOpacity={0.7} style={{marginLeft: 10}} onPress={() => navigation.goBack()}>
-                                <Ionicons name="close-outline" size={35} />
+                                <Ionicons name="close-outline" size={35} color="#000" />
                             </TouchableOpacity>
                         )
                     })}

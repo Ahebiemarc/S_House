@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, Alert } from 'react-native';
 import { TextInput, Button, Card, Title, Text, Paragraph } from 'react-native-paper';
 import { StackScreenProps } from '@react-navigation/stack';
-import { ImageFile, usePostData } from '../../application/hooks/usePost';
+import { ImageFile, usePostData } from '../../application/providers/PostContext';
 import { RootStackParamList } from '../../domain/types/route.types';
 import ProtectedRoute from '../../application/routes/Protected.route';
 

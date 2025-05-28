@@ -7,9 +7,9 @@ import { defaultStyles } from "../../../application/utils/constants/Styles";
 import Colors from "../../../application/utils/constants/Color";
 import ApartmentItem from "../../components/ApartmentItem.component";
 import ProtectedRoute from "../../../application/routes/Protected.route";
-import { useAuth } from "../../../application/hooks/useAuth";
+import { useAuth } from "../../../application/providers/AuthContext";
 import { Alert } from "react-native";
-import { UserProvider, useUser } from "../../../application/hooks/useUser";
+import { UserProvider, useUser } from "../../../application/providers/UserContext";
 
 
 const defautProfile = require('../../../presentation/assets/images/defautProfile.png');
@@ -25,7 +25,7 @@ const Profile: React.FC<Props> = ({navigation}) => {
     const { logout, user: authUser } = useAuth(); // authUser peut être légèrement obsolète après une màj via UserProvider
     const { currentUser } = useUser(); // << Utilise currentUser de UserProvider pour l'affichage    console.log(user?.user);
 
-    const displayUser = currentUser || authUser?.user;
+    const displayUser = currentUser?.user || authUser?.user;
 
     const handleLogout = () => {
          Alert.alert(

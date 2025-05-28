@@ -1,4 +1,4 @@
-
+//screens/tabs/inbox.screen.tsx
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
@@ -9,128 +9,135 @@ import {
   SafeAreaView,
   Dimensions,
   ListRenderItem,
+  RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import 'react-native-gesture-handler';
 import ChatItem from '../../components/ChatItem';
 import { StyleSheet } from 'react-native';
 import { TabStackScreenProps } from '../../../domain/types/route.types';
-import { Chat } from '../../../domain/interface/Message';
+import { AppChat, Chat } from '../../../domain/interface/Message.interface';
 import ProtectedRoute from '../../../application/routes/Protected.route';
+import { useAuth } from '../../../application/providers/AuthContext';
+import { useChat } from '../../../application/providers/ChatContext';
+
+const defautProfile = require('../../../presentation/assets/images/defautProfile.png');
+
 
 
 // Props pour ChatScreen
-type ChatScreenProps = TabStackScreenProps<'Inbox'>;
+type InboxScreenProps = TabStackScreenProps<'Inbox'>;
 
-
-
-// Données factices pour la démonstration
-const initialChatsData: Chat[] = [
-  {
-    id: '1',
-    userName: 'Nick Mack',
-    avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-    lastMessage: 'When is a good time to call?',
-    time: '10:30 AM',
-    messages: [
-      { id: 'm1', text: 'Hey Samantha!', sender: 'Nick Mack', timestamp: '10:25 AM', status: 'read', type: 'received' },
-      { id: 'm2', text: 'Hi', sender: 'Samantha', timestamp: '10:26 AM', status: 'sent', type: 'sent' },
-      { id: 'm3', text: 'When is a good time to call?', sender: 'Nick Mack', timestamp: '10:30 AM', status: 'delivered', type: 'received' },
-    ],
-  },
-  {
-    id: '2',
-    userName: 'Robert Woods',
-    avatar: 'https://randomuser.me/api/portraits/men/2.jpg',
-    lastMessage: 'She said you were going to...',
-    time: 'Just now',
-    messages: [
-        { id: 'm1', text: 'She said you were going to...', sender: 'Robert Woods', timestamp: '11:00 AM', status: 'read', type: 'received' },
-    ],
-  },
-  {
-    id: '3',
-    userName: 'Christine Smith',
-    avatar: 'https://randomuser.me/api/portraits/women/3.jpg',
-    lastMessage: 'To made and greater made...',
-    time: '2h',
-    messages: [
-        { id: 'm1', text: 'To made and greater made...', sender: 'Christine Smith', timestamp: '09:00 AM', status: 'read', type: 'received' },
-    ],
-  },
-  
-];
 
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 
 // Écran de la liste des Chats (ChatScreen)
-const Inbox: React.FC<ChatScreenProps> = ({ navigation }) => {
-    const [searchText, setSearchText] = useState<string>('');
-    const [chats, setChats] = useState<Chat[]>(initialChatsData);
-  
-    const filteredChats = chats.filter(chat =>
-      chat.userName.toLowerCase().includes(searchText.toLowerCase())
-    );
-  
-    // Simplified: Alert is now handled within ChatItem
-    const handleDeleteChat = useCallback((chatId: string) => {
-      setChats(prevChats => prevChats.filter(chat => chat.id !== chatId));
-      // Here, you would also call your API to delete the chat from the server
-      // console.log(`Chat with ID: ${chatId} marked for deletion from state.`);
-    }, []);
-  
-    const renderChatItem: ListRenderItem<Chat> = ({ item }) => (
-      <ChatItem
-          item={item}
-          onPress={() => navigation.navigate('MessageScreen',  {
-              chatId: item.id,
-              userName: item.userName,
-              userAvatar: item.avatar,
-              initialMessages: item.messages,
-          })}
-          onDelete={handleDeleteChat}
-      />
-    );
+
+const Inbox: React.FC<InboxScreenProps> = ({ navigation }) => {
+  const { user } = useAuth();
+  const { chats, loadChats, isLoadingChats, setChats: setContextChats, setCurrentChatIdAndReceiver } = useChat();
+  const [searchText, setSearchText] = useState<string>('');
+
+  useEffect(() => {
+    if (user) { // Charger les chats seulement si l'utilisateur est authentifié
+      loadChats();
+    }
+  }, [loadChats, user]);
+
+  const handleRefresh = useCallback(async () => {
+    if (user) {
+      await loadChats();
+    }
+  }, [loadChats, user]);
+
+  const filteredChats = chats.length > 0
+  ? chats.filter(chat =>
+      chat.receiver.username.toLowerCase().includes(searchText.toLowerCase())
+    )
+  : [];
+
+  const handleDeleteChat = useCallback(async (chatId: string) => {
+    // Implémentez la logique de suppression de chat via apiService et mettez à jour le contexte
+    console.log(`Tentative de suppression du chat : ${chatId}`);
+    // Exemple : await deleteChatAPI(chatId); loadChats();
+    setContextChats(prevChats => prevChats.filter(chat => chat.id !== chatId)); // Mise à jour optimiste
+  }, [setContextChats /*, deleteChatAPI, loadChats */]);
+
+  const renderChatItem: ({ item }: { item: AppChat }) => any = ({ item }) => {
+    if (!item?.receiver) return null;
   
     return (
+      <ChatItem
+        item={item}
+        onPress={() => {
+          if (!user) return;
+          setCurrentChatIdAndReceiver(item.id, item.receiver);
+          navigation.navigate('MessageScreen', {
+            chatId: item.id,
+            userName: item.receiver.username,
+            userAvatar: item.receiver.avatar!,
+            receiverId: item.receiver.id,
+          });
+        }}
+        onDelete={() => handleDeleteChat(item.id)}
+      />
+    );
+  };
+  
+
+  if (isLoadingChats && chats.length === 0) {
+    return (
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.chatScreenContainer}>
-          <View style={styles.chatHeader}>
-              <Text style={styles.chatHeaderTitle}>Inbox</Text>
-          </View>
-          <View style={styles.searchContainer}>
-            <Icon name="search-outline" size={20} color="#8E8E93" style={styles.searchIcon} />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Rechercher quelque chose" // Rechercher quelque chose
-              placeholderTextColor="#8E8E93"
-              value={searchText}
-              onChangeText={setSearchText}
-            />
-            <TouchableOpacity style={styles.filterButton}>
-               <Icon name="options-outline" size={24} color="#007AFF" />
-            </TouchableOpacity>
-          </View>
-          {filteredChats.length > 0 ? (
-              <FlatList
-                data={filteredChats}
-                renderItem={renderChatItem}
-                keyExtractor={(item: Chat) => item.id}
-                style={styles.chatList}
-              />
-          ) : (
-              <View style={styles.emptyChatContainer}>
-                  <Icon name="chatbubbles-outline" size={60} color="#B0B0B0" />
-                  <Text style={styles.emptyChatMessage}>Aucune conversation pour le moment.</Text> 
-                  {searchText !== '' && <Text style={styles.emptyChatSubMessage}>Essayez une autre recherche.</Text>} 
-              </View>
-          )}
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color="#007AFF" />
+          <Text>Chargement des conversations...</Text>
         </View>
       </SafeAreaView>
     );
-  };
+  }
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.chatScreenContainer}>
+        <View style={styles.chatHeader}>
+          <Text style={styles.chatHeaderTitle}>Boîte de réception</Text>
+        </View>
+        <View style={styles.searchContainer}>
+          <Icon name="search-outline" size={20} color="#8E8E93" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Rechercher une conversation"
+            placeholderTextColor="#8E8E93"
+            value={searchText}
+            onChangeText={setSearchText}
+          />
+        </View>
+        {filteredChats.length > 0 ? (
+          <FlatList
+            data={filteredChats}
+            renderItem={renderChatItem}
+            keyExtractor={(item: AppChat) => item.id}
+            style={styles.chatList}
+            refreshControl={
+              <RefreshControl refreshing={isLoadingChats} onRefresh={handleRefresh} colors={["#007AFF"]}/>
+            }
+          />
+        ) : (
+          <View style={styles.emptyChatContainer}>
+            <Icon name="chatbubbles-outline" size={60} color="#B0B0B0" />
+            <Text style={styles.emptyChatMessage}>
+              {searchText !== '' ? 'Aucune conversation ne correspond.' : 'Aucune conversation pour le moment.'}
+            </Text>
+            {searchText !== '' && <Text style={styles.emptyChatSubMessage}>Essayez un autre terme de recherche.</Text>}
+          </View>
+        )}
+      </View>
+    </SafeAreaView>
+  );
+};
 
 
    // Styles
@@ -263,14 +270,15 @@ const Inbox: React.FC<ChatScreenProps> = ({ navigation }) => {
         marginTop: 5,
         textAlign: 'center',
       },
-    
+      centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+
       
     });
   
 //export default Inbox;
 
 
-export default function ProtectedInbox(props: ChatScreenProps) {
+export default function ProtectedInbox(props: InboxScreenProps) {
     return (
       <ProtectedRoute>
         <Inbox {...props} />

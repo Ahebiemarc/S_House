@@ -14,11 +14,12 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import RootNavigator from './src/application/navigations/Root.navigation';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { AuthProvider } from './src/application/hooks/useAuth';
+import { AuthProvider } from './src/application/providers/AuthContext';
 import { DefaultTheme, PaperProvider } from 'react-native-paper';
-import { PostProvider } from './src/application/hooks/usePost';
-import { FavoritesProvider } from './src/application/hooks/useFavorites';
-import { UserProvider } from './src/application/hooks/useUser';
+import { PostProvider } from './src/application/providers/PostContext';
+import { FavoritesProvider } from './src/application/providers/FavoritesContext';
+import { UserProvider } from './src/application/providers/UserContext';
+import { ChatProvider } from './src/application/providers/ChatContext';
 
 
 // Thème pour react-native-paper (optionnel)
@@ -51,9 +52,11 @@ function App(): React.JSX.Element {
            <UserProvider>
             <PostProvider>
                 <FavoritesProvider>
-                  <NavigationContainer>
-                      <RootNavigator />
-                  </NavigationContainer>
+                  <ChatProvider>
+                    <NavigationContainer>
+                        <RootNavigator />
+                    </NavigationContainer>
+                  </ChatProvider>
                 </FavoritesProvider>
               </PostProvider>
            </UserProvider>

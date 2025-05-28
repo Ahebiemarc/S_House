@@ -1,0 +1,40 @@
+{
+    "id": "683649da2dbaaef7536b38ca",
+    "userIDs": [
+        "682e6ab49a297b4833848a0c",
+        "67ed421ea37028ce5996aa41"
+    ],
+    "seenBy": [
+        "682e6ab49a297b4833848a0c"
+    ],
+    "createdAt": "2025-05-27T23:25:14.605Z",
+    "lastMessage": "Salut",
+    "messages": [
+        {
+            "id": "68364a702dbaaef7536b38cd",
+            "chatId": "683649da2dbaaef7536b38ca",
+            "senderId": "682e6ab49a297b4833848a0c",
+            "text": "Salut",
+            "createdAt": "2025-05-27T23:27:44.711Z"
+        },
+        {
+            "id": "68364a622dbaaef7536b38cc",
+            "chatId": "683649da2dbaaef7536b38ca",
+            "senderId": "682e6ab49a297b4833848a0c",
+            "text": "Ccc",
+            "createdAt": "2025-05-27T23:27:30.434Z"
+        },
+        {
+            "id": "683649e82dbaaef7536b38cb",
+            "chatId": "683649da2dbaaef7536b38ca",
+            "senderId": "682e6ab49a297b4833848a0c",
+            "text": "Cc",
+            "createdAt": "2025-05-27T23:25:28.114Z"
+        }
+    ],
+    "receiver": {
+        "id": "67ed421ea37028ce5996aa41",
+        "username": "alinho",
+        "avatar": "https://res.cloudinary.com/dr6hkslkn/image/upload/v1748101677/avatars/odm4nymj1ci8o9pgsslv.webp"
+    }
+}

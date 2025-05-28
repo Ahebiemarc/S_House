@@ -1,3 +1,4 @@
+//screens/Message.screen.tsx
 import React, { useState, useEffect, useRef, useCallback, FC } from 'react';
 import {
   View,
@@ -17,23 +18,39 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Swipeable } from 'react-native-gesture-handler';
 
 import Colors from '../../application/utils/constants/Color';
-import messageData from '../../presentation/assets/data/messages.json';
+import messageData from '../assets/data/messages.json';
 import ChatMessageBox from '../components/ChatMessageBox';
 import ReplyMessageBar from '../components/ReplyMessageBar';
 import { RootStackScreenProps } from '../../domain/types/route.types';
 import ProtectedRoute from '../../application/routes/Protected.route';
+import { useAuth } from '../../application/providers/AuthContext';
+import { useChat } from '../../application/providers/ChatContext';
+import { UserProps } from '../../domain/interface/User.interface';
+
+const defautProfile = require('../assets/images/defautProfile.png');
+
+
 
 type Props = RootStackScreenProps<'MessageScreen'>;
 
 const MessageScreen: FC<Props> = ({ navigation, route }) => {
-  const { chatId, userName, userAvatar } = route.params;
+  const { chatId, userName, userAvatar, receiverId } = route.params;
+  const { user: currentUser } = useAuth();
+  const {
+      currentChatMessages,
+      loadMessagesForChat,
+      sendMessage,
+      setCurrentChatIdAndReceiver,
+      isLoadingMessages,
+      currentChatReceiver,
+    } = useChat();
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [text, setText] = useState('');
   const [replyMessage, setReplyMessage] = useState<IMessage | null>(null);
   const insets = useSafeAreaInsets();
   const swipeableRowRef = useRef<Swipeable | null>(null);
 
-  useEffect(() => {
+  /*useEffect(() => {
     const chatMessages = messageData.map((message) => ({
       _id: message.id,
       text: message.msg,
@@ -57,13 +74,27 @@ const MessageScreen: FC<Props> = ({ navigation, route }) => {
         },
       },
     ]);
-  }, []);
+  }, []);*/
+
+  useEffect(() => {
+      const receiverProfile: UserProps = {
+          id: receiverId,
+          username: userName,
+          avatar: userAvatar ? userAvatar : defautProfile,
+      };
+      setCurrentChatIdAndReceiver(chatId, receiverProfile);
+      loadMessagesForChat(chatId, receiverProfile);
+  
+      return () => {
+        setCurrentChatIdAndReceiver(null, null);
+      };
+  }, [chatId, userName, userAvatar, receiverId]);
 
   useEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
         <View style={styles.headerTitle}>
-          <Image source={{ uri: userAvatar }} style={styles.avatar} />
+          <Image source={userAvatar ? { uri: userAvatar  } : defautProfile } style={styles.avatar} />
           <Text style={styles.userName}>{userName}</Text>
         </View>
       ),
@@ -72,22 +103,25 @@ const MessageScreen: FC<Props> = ({ navigation, route }) => {
           <Ionicons name="chevron-back" size={28} color="#007AFF" />
         </TouchableOpacity>
       ),
-      /*headerRight: () => (
-        <View style={styles.headerIcons}>
-          <TouchableOpacity style={{ marginRight: 15 }}>
-            <Ionicons name="call-outline" size={24} color="#007AFF" />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Ionicons name="videocam-outline" size={24} color="#007AFF" />
-          </TouchableOpacity>
-        </View>
-      ),*/
     });
   }, [navigation, userName, userAvatar]);
 
-  const onSend = useCallback((newMessages: IMessage[] = []) => {
+  /*const onSend = useCallback((newMessages: IMessage[] = []) => {
     setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
-  }, []);
+  }, []);*/
+
+  const onSend = useCallback((newMessages: IMessage[] = []) => {
+        if (!currentUser || !currentChatReceiver) {
+          console.warn(
+            'Utilisateur ou destinataire non défini, impossible d\'envoyer le message.'
+          );
+          return;
+        }
+        const messageText = newMessages[0].text;
+        sendMessage(chatId, messageText, currentChatReceiver.id);
+      },
+      [chatId, currentUser, sendMessage, currentChatReceiver]
+  );
 
   const updateRowRef = useCallback(
     (ref: any) => {
@@ -105,7 +139,7 @@ const MessageScreen: FC<Props> = ({ navigation, route }) => {
     }
   }, [replyMessage]);
 
-  const dismissKeyboard = () => Keyboard.dismiss();
+  const dismissKeyboard = () => Keyboard. dismiss();
 
   return (
     <TouchableWithoutFeedback onPress={dismissKeyboard}>
@@ -117,14 +151,36 @@ const MessageScreen: FC<Props> = ({ navigation, route }) => {
           source={require('../../presentation/assets/images/pattern.png')}
           style={{ flex: 1, backgroundColor: Colors.background }}>
           <GiftedChat
-            messages={messages}
-            onSend={onSend}
-            user={{ _id: 1 }}
-            onInputTextChanged={setText}
+            messages={[...currentChatMessages].sort((a, b) => {
+              const dateA = typeof a.createdAt === 'number' ? a.createdAt : a.createdAt.getTime();
+              const dateB = typeof b.createdAt === 'number' ? b.createdAt : b.createdAt.getTime();
+              return dateB - dateA;
+            })}
+            onSend={(messages) => onSend(messages)}
+            //user={{ _id: 1 }}
+            //inverted={false}
+            timeTextStyle={{
+              left: {
+                color: '#888', // Messages de l’autre
+                fontSize: 10,
+              },
+              right: {
+                color: '#888', // Tes messages
+                fontSize: 10,
+              },
+            }}
+            user={{
+              _id: currentUser?.user.id || 'fallback-user-id-giftedchat',
+              name: currentUser?.user.username,
+              avatar: currentUser?.user.avatar,
+            }}
+            //onInputTextChanged={setText}
             bottomOffset={insets.bottom}
             textInputProps={styles.composer}
+            placeholder="Écrivez un message..."
             maxComposerHeight={100}
             renderAvatar={null}
+            alwaysShowSend
             renderSystemMessage={(props) => (
               <SystemMessage {...props} textStyle={{ color: Colors.gray }} />
             )}
@@ -140,22 +196,15 @@ const MessageScreen: FC<Props> = ({ navigation, route }) => {
             )}
             renderSend={(props) => (
               <View style={styles.sendContainer}>
-                {text === '' ? (
-                  <>
-                    <Ionicons name="camera-outline" color={Colors.primary} size={28} />
-                    <Ionicons name="mic-outline" color={Colors.primary} size={28} />
-                  </>
-                ) : (
                   <Send {...props}>
                     <Ionicons name="send" color={Colors.primary} size={28} style={{marginBottom:10}} />
                   </Send>
-                )}
               </View>
             )}
             renderInputToolbar={(props) => (
               <InputToolbar
                 {...props}
-                containerStyle={{ backgroundColor: Colors.background }}
+                containerStyle={{ backgroundColor: Colors.background,  }}
                 renderActions={() => (
                   <View style={styles.addIconContainer}>
                     <Ionicons name="add" color={Colors.primary} size={28} />
@@ -191,6 +240,7 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     fontSize: 16,
     marginVertical: 4,
+    color: "#000",
   },
   sendContainer: {
     height: 44,

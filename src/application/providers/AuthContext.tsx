@@ -3,18 +3,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
 import AuthService from "../../infrastructure/api/auth.api";
 import axios from "axios";
+import { User } from "../../domain/interface/User.interface";
 
 // Types
-type UserProps = {
-  id: string;
-  username: string;
-  email: string;
-  avatar?: string;
-}
-interface User {
-  
-  user: UserProps;
-}
+
 
 interface AuthContextType {
   user: User | null;

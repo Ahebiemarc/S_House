@@ -3,7 +3,7 @@ import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { ReviewProvider, useReviews } from '../../../application/hooks/useReview';
+import { ReviewProvider, useReviews } from '../../../application/providers/ReviewContext';
 import { StarRating } from '../../components/StarRating';
 import { RatingBreakdown } from '../../components/RatingBreakdown';
 import { ReviewItem } from '../../components/ReviewItem';

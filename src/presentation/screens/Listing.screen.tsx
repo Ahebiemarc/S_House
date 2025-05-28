@@ -1,5 +1,7 @@
+
+
 import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
-import { Alert, Dimensions, Image, SafeAreaView, Share, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Dimensions, Image, SafeAreaView, Share, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { RootStackScreenProps } from "../../domain/types/route.types";
 import Animated, { interpolate, SlideInDown, useAnimatedRef, useAnimatedStyle, useScrollViewOffset } from "react-native-reanimated";
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -7,64 +9,80 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from "../../application/utils/constants/Color";
 import { defaultStyles } from "../../application/utils/constants/Styles";
 import ImagesCarousel from "../components/ImageCarousel";
-import { PostData } from "../../domain/interface/Post.interface";
-import { useFavorites } from "../../application/hooks/useFavorites";
+import { useFavorites } from "../../application/providers/FavoritesContext";
+import { UserProps } from "../../domain/interface/User.interface";
+import { useAuth } from "../../application/providers/AuthContext";
+import { useChat } from "../../application/providers/ChatContext";
 
 const defaultProfile = require("../../presentation/assets/images/defautProfile.png")
 
 const IMG_HEIGHT = 300;
 const {width} = Dimensions.get('window');
 
-type Props = RootStackScreenProps<'Listing'>
+// Assurez-vous que PostData inclut bien user.id, user.username, et user.avatar
+// Exemple de structure attendue pour post.user dans PostData:
+// user: {
+//   id: string;
+//   username: string;
+//   avatar?: string;
+// }
+
+type Props = RootStackScreenProps<'Listing'> // Assurez-vous que 'Listing' est correct dans vos types de navigation
 
 
-//Simplified Skeleton
+//Simplified Skeleton (vous pouvez garder votre skeleton existant)
 const ListingSkeleton = () => {
   return (
-      <View style={styles.container}>
-          <View style={[styles.image, { backgroundColor: '#e0e0e0' }]} />
-          <View style={styles.infoContainer}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <View style={{ width: '60%', height: 20, backgroundColor: '#e0e0e0' }} />
-                  <View style={{ width: '20%', height: 20, backgroundColor: '#e0e0e0' }} />
-              </View>
-              <View style={{ width: '80%', height: 18, backgroundColor: '#e0e0e0', marginBottom: 10 }} />
-              <View style={{ width: '50%', height: 18, backgroundColor: '#e0e0e0', marginBottom: 10 }} />
-              <View style={{ width: '40%', height: 20, backgroundColor: '#e0e0e0' }} />
-              <View style={styles.divider} />
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                  <View style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: '#e0e0e0' }} />
-                  <View>
-                      <View style={{ width: '70%', height: 20, backgroundColor: '#e0e0e0', marginBottom: 5 }} />
-                      <View style={{ width: '50%', height: 16, backgroundColor: '#e0e0e0' }} />
-                  </View>
-              </View>
-              <View style={styles.divider} />
-              <View style={{ width: '90%', height: 80, backgroundColor: '#e0e0e0', marginTop: 10 }} />
-          </View>
-      </View>
+    <View style={styles.container}>
+        <View style={[styles.image, { backgroundColor: '#e0e0e0' }]} />
+        <View style={styles.infoContainer}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <View style={{ width: '60%', height: 20, backgroundColor: '#e0e0e0' }} />
+                <View style={{ width: '20%', height: 20, backgroundColor: '#e0e0e0' }} />
+            </View>
+            <View style={{ width: '80%', height: 18, backgroundColor: '#e0e0e0', marginBottom: 10 }} />
+            <View style={{ width: '50%', height: 18, backgroundColor: '#e0e0e0', marginBottom: 10 }} />
+            <View style={{ width: '40%', height: 20, backgroundColor: '#e0e0e0' }} />
+            <View style={styles.divider} />
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                <View style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: '#e0e0e0' }} />
+                <View>
+                    <View style={{ width: '70%', height: 20, backgroundColor: '#e0e0e0', marginBottom: 5 }} />
+                    <View style={{ width: '50%', height: 16, backgroundColor: '#e0e0e0' }} />
+                </View>
+            </View>
+            <View style={styles.divider} />
+            <View style={{ width: '90%', height: 80, backgroundColor: '#e0e0e0', marginTop: 10 }} />
+        </View>
+    </View>
   );
 };
 
 const Listing:React.FC<Props> = ({route, navigation}) => {
-    const { post } = route.params;
-    const [posts, setPosts] = useState<PostData>(post);
+    const { post } = route.params; // post devrait être de type PostData
+    // const [posts, setPosts] = useState<PostData>(post); // posts n'est pas utilisé, post l'est directement
     const { toggleFavorite, isFavorite } = useFavorites();
-    const isFavorited = isFavorite(posts.id!);
+    const isFavorited = isFavorite(post.id!); // Utiliser post.id directement
+
+    // Hooks pour le chat
+    const { user: currentUser } = useAuth();
+    const { findOrCreateChatWithUser, setCurrentChatIdAndReceiver } = useChat();
+    const [isCreatingChat, setIsCreatingChat] = useState(false);
     
 
     const scrollRef = useAnimatedRef<Animated.ScrollView>();
-
     const scrollOffset = useScrollViewOffset(scrollRef);
 
     const shareListing = async () => {
         try {
           await Share.share({
-            title: posts.title,
-            url: posts.images[0].uri!,
+            title: post.title,
+            url: post.images[0]?.uri || 'https://example.com', // Fallback URL
+            message: `${post.title} - Découvrez cette annonce ! ${post.images[0]?.uri || ''}`, // Message optionnel
           });
         } catch (err) {
           console.log(err);
+          Alert.alert("Erreur", "Impossible de partager cette annonce pour le moment.");
         }
       };
 
@@ -72,7 +90,6 @@ const Listing:React.FC<Props> = ({route, navigation}) => {
         navigation.setOptions({
           headerTitle: '',
           headerTransparent: true,
-    
           headerBackground: () => (
             <Animated.View style={[headerAnimatedStyle, styles.header]}></Animated.View>
           ),
@@ -82,14 +99,13 @@ const Listing:React.FC<Props> = ({route, navigation}) => {
                 <Ionicons name="share-outline" size={22} color={'#000'} />
               </TouchableOpacity>
               <TouchableOpacity 
-              onPress={() => toggleFavorite(posts)}
-              style={[styles.roundButton, {marginRight: 10}]}
+                onPress={() => toggleFavorite(post)} // Utiliser post directement
+                style={[styles.roundButton, {marginRight: 10}]}
               >
                 <Ionicons 
                   name={isFavorited ? "heart" : "heart-outline"} 
-                  size={22} color={isFavorited ? "red" : "#000"}
+                  size={22} color={isFavorited ? Colors.primary : "#000"} // Utiliser une couleur primaire pour favori
                 />
-                
               </TouchableOpacity>
             </View>
           ),
@@ -99,10 +115,8 @@ const Listing:React.FC<Props> = ({route, navigation}) => {
             </TouchableOpacity>
           ),
         });
-      }, [navigation, isFavorited]);
+      }, [navigation, isFavorited, post, shareListing, toggleFavorite]); // Ajouter les dépendances
     
-      
-
     const imageAnimatedStyle = useAnimatedStyle(() => {
         return {
             transform: [
@@ -119,19 +133,74 @@ const Listing:React.FC<Props> = ({route, navigation}) => {
       }, []);
 
     
-    const averageRating = posts.reviews.length > 0
-    ? posts.reviews.reduce((sum:number, review:any) => sum + review.rating, 0) / posts.reviews.length
-    : 0;
+      const averageRating = post.reviews.length > 0
+      ? parseFloat(
+          (post.reviews.reduce((sum: number, review: any) => sum + review.rating, 0) / post.reviews.length).toFixed(1)
+        )
+      : 0;
+    
 
     const handleNavigateToReviews = () => {
-      if (posts.id) {
-          navigation.navigate('ReviewsWrapper', { postId: posts.id });
+      if (post.id) {
+          navigation.navigate('ReviewsWrapper', { postId: post.id }); // Assurez-vous que 'ReviewsWrapper' est correct
       } else {
           console.warn("Post ID is undefined, cannot navigate to reviews.");
           Alert.alert("Erreur", "Impossible d'afficher les avis pour ce post car son ID est manquant.");
       }
     };
+
+    const handleSendMessage = async () => {
+      console.log("Appui sur envoyer message", { currentUser, postUserId: post.user.id });
+      if (!currentUser) {
+        Alert.alert("Authentification requise", "Veuillez vous connecter pour envoyer un message.");
+        return;
+      }
+      if (!post.user || !post.user.id) {
+        Alert.alert("Erreur", "Impossible de contacter l'auteur de cette annonce.");
+        return;
+      }
+      if (currentUser.user.id === post.user.id) {
+        Alert.alert("Action impossible", "Vous ne pouvez pas vous envoyer de message à vous-même.");
+        return;
+      }
+      setIsCreatingChat(true);
+      try {
+        const recipientProfile: UserProps = {
+          id: post.user.id,
+          username: post.user.username,
+          avatar: post.user.avatar,
+        };
+        console.log("Création ou recherche du chat avec", recipientProfile);
+        const chat = await findOrCreateChatWithUser(post.user.id, recipientProfile);
+        console.log("Chat obtenu", chat);
     
+        if (chat) {
+          setCurrentChatIdAndReceiver(chat.id, chat.receiver);
+          navigation.navigate('MessageScreen', {
+            chatId: chat.id,
+            userName: chat.receiver.username,
+            userAvatar: chat.receiver.avatar || '',
+            receiverId: chat.receiver.id,
+          });
+          //navigation.navigate('Tab', {screen: 'Inbox'})
+        } else {
+          Alert.alert("Erreur de chat", "Impossible de démarrer la conversation. Veuillez réessayer.");
+        }
+      } catch (error) {
+        console.error("Erreur lors de la création ou de la recherche du chat:", error);
+        Alert.alert("Erreur", "Une erreur s'est produite. Veuillez réessayer.");
+      } finally {
+        setIsCreatingChat(false);
+      }
+    };
+    
+    
+    // Vérifier si les données du post sont chargées
+    if (!post || !post.user) {
+        // Afficher un skeleton ou un indicateur de chargement si les données ne sont pas encore prêtes
+        // Ceci est un fallback, idéalement les données sont toujours passées correctement
+        return <ListingSkeleton />;
+    }
     
     return(
         <SafeAreaView style={styles.container}>
@@ -141,75 +210,66 @@ const Listing:React.FC<Props> = ({route, navigation}) => {
                 scrollEventThrottle={16}
                 showsVerticalScrollIndicator={false}
             >
-
-                {/*<Animated.Image
-                source={{ uri: item.xl_picture_url }}
-                style={[styles.image, imageAnimatedStyle]}
-                resizeMode="cover"
-               />*/}
-               <ImagesCarousel images={posts.images} stylesP={[styles.image, imageAnimatedStyle]}/>
+                <ImagesCarousel images={post.images} stylesP={[styles.image, imageAnimatedStyle]}/>
+                
                 <View style={styles.infoContainer}>
-                    <Text style={styles.name}>{posts.title}</Text>
+                    <Text style={[styles.name, {color:Colors.grey}]}>{post.title}</Text>
                     <Text style={styles.location}>
-                        {posts.address} à {posts.city}
+                        {post.address} à {post.city}
                     </Text>
                     <Text style={styles.rooms}>
-                        {posts.bedroom} Chambres ·{' '}
-                        {posts.bathroom} Salle de bain
+                        {post.bedroom} Chambres ·{' '}
+                        {post.bathroom} Salle de bain
                     </Text>
-                    {/*<View style={{ flexDirection: 'row', gap: 4 }}>
-                        <Ionicons name="star" size={16} />
-                        <Text style={styles.ratings}>
-                        {averageRating !== 0  ? averageRating : 'N/A'} · <Text style={{textDecorationLine: 'underline'}}>{posts.reviews.length} avis</Text>
-                        </Text>
-                    </View>*/}
-                    {/* MODIFICATION ICI pour la navigation des avis */}
                     <View style={styles.ratingContainer}>
                         <Ionicons name="star" size={16} color={Colors.grey} />
                         <Text style={styles.ratings}>
-                            {/* Affiche la note moyenne et le séparateur "·" conditionnellement */}
-                            {`${averageRating !== 0 ? averageRating.toFixed(1) : 'N/A'}${posts.reviews && posts.reviews.length >= 0 ? ' · ' : ''}`}
+                            {`${averageRating !== 0 ? averageRating.toFixed(1) : 'N/A'}${post.reviews && post.reviews.length >= 0 ? ' · ' : ''}`}
                         </Text>
-                        {/* Affiche le lien vers les avis seulement si posts.reviews est défini (même pour 0 avis) */}
-                        {posts.reviews && posts.reviews.length >= 0 && (
+                        {post.reviews && post.reviews.length >= 0 && (
                             <TouchableOpacity onPress={handleNavigateToReviews}>
                                 <Text style={[styles.ratings, styles.reviewLink]}>
-                                    {`${posts.reviews.length} avis`}
+                                    {`${post.reviews.length} avis`}
                                 </Text>
                             </TouchableOpacity>
                         )}
                     </View>
-                    {/* Fin de la modification */}
                     <View style={styles.divider} />
 
                     <View style={styles.hostView}>
-                        <Image source={posts.user.avatar ? {uri :posts.user.avatar} : defaultProfile  } style={styles.host} />
-
+                        <Image source={post.user.avatar ? {uri :post.user.avatar} : defaultProfile} style={styles.host} />
                         <View>
-                        <Text style={{ fontWeight: '500', fontSize: 16 }}>Posté par {posts.user.username}</Text>
-                        {/*<Text>Host since {item.host_since}</Text>*/}
+                        <Text style={{ fontWeight: '500', fontSize: 16, color: Colors.grey, }}>Posté par {post.user.username}</Text>
                         </View>
                     </View>
 
                     <View style={styles.divider} />
-
-                    <Text style={styles.description}>{posts.desc}</Text>
+                    <Text style={styles.description}>{post.desc}</Text>
                 </View>
             </Animated.ScrollView>
+
+            {/* Footer pour le prix et le bouton d'action */}
             <Animated.View style={defaultStyles.footer} entering={SlideInDown.delay(200)}>
-                <View
-                style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <TouchableOpacity style={styles.footerText}>
-                        <Text style={styles.footerPrice}>DT{posts.price}</Text>
+                        <Text style={styles.footerPrice}>DT{post.price}</Text>
                         <Text style={{fontFamily: 'Poppins-Medium'}}>/Mois</Text>
-
                     </TouchableOpacity>
 
-
-                    <TouchableOpacity style={[defaultStyles.btn, { paddingRight: 20, paddingLeft: 20 }]}>
-                        <Text style={defaultStyles.btnText}>Reserver</Text>
+                    {/* Bouton "Envoyer un message" */}
+                    <TouchableOpacity 
+                        style={[defaultStyles.btn, { paddingRight: 20, paddingLeft: 20 }, isCreatingChat ? styles.buttonDisabled : {}]}
+                        onPress={handleSendMessage}
+                        disabled={isCreatingChat || currentUser?.user.id === post.user.id} // Désactiver si création en cours ou si c'est son propre post
+                    >
+                        {isCreatingChat ? (
+                            <ActivityIndicator size="small" color="#fff" />
+                        ) : (
+                            <Text style={defaultStyles.btnText}>
+                                {currentUser?.user.id === post.user.id ? "Votre annonce" : "Envoyer un message"}
+                            </Text>
+                        )}
                     </TouchableOpacity>
-
                 </View>
             </Animated.View>
         </SafeAreaView>
@@ -231,7 +291,6 @@ const styles = StyleSheet.create({
       },
       name: {
         fontSize: 26,
-        //fontWeight: 'bold',
         fontFamily: 'Poppins-SemiBold',
       },
       location: {
@@ -245,20 +304,20 @@ const styles = StyleSheet.create({
         marginVertical: 4,
         fontFamily: 'Poppins-Medium',
       },
-      ratings: { // Style de base pour le texte des notes/avis
+      ratings: { 
         fontSize: 16,
-        fontFamily: 'Poppins-SemiBold', // ou Poppins-Medium selon la préférence
-        color: Colors.grey, // Une couleur pour le texte
+        fontFamily: 'Poppins-SemiBold',
+        color: Colors.grey, 
       },
-      ratingContainer: { // Nouveau conteneur pour aligner étoile, note et lien avis
+      ratingContainer: { 
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 4, // Espace entre les éléments
+        gap: 4, 
       },
-      reviewLink: { // Style spécifique pour le lien "X avis"
+      reviewLink: { 
         textDecorationLine: 'underline',
-        color: Colors.primary, // Optionnel: une couleur distincte pour le lien
-        fontFamily: 'Poppins-SemiBold', // Garder la même police ou ajuster
+        color: Colors.primary, 
+        fontFamily: 'Poppins-SemiBold', 
       },
       divider: {
         height: StyleSheet.hairlineWidth,
@@ -282,10 +341,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 4,
+        color: Colors.grey,
       },
       footerPrice: {
         fontSize: 18,
         fontFamily: 'Poppins-SemiBold',
+        color: Colors.grey,
       },
       roundButton: {
         width: 40,
@@ -294,7 +355,12 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         alignItems: 'center',
         justifyContent: 'center',
-        color: Colors.primary,
+        // color: Colors.primary, // color n'est pas une prop de style pour View/TouchableOpacity
+        elevation: 2, // Pour Android
+        shadowColor: '#000', // Pour iOS
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 1,
       },
       bar: {
         flexDirection: 'row',
@@ -304,16 +370,20 @@ const styles = StyleSheet.create({
       },
       header: {
         backgroundColor: '#fff',
-        height: 70,
+        height: 70, // Ajustez selon la hauteur de votre header
         borderBottomWidth: StyleSheet.hairlineWidth,
         borderColor: Colors.grey,
       },
-    
       description: {
         fontSize: 16,
         marginTop: 10,
         fontFamily: 'Poppins-Medium',
+        lineHeight: 24, // Améliorer la lisibilité
+        color: Colors.grey,
       },
-})
+      buttonDisabled: {
+        backgroundColor: Colors.grey, // Ou une autre couleur pour indiquer l'état désactivé
+      }
+});
 
 export default Listing;

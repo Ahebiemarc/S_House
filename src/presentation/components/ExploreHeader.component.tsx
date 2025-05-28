@@ -74,13 +74,13 @@ const ExploreHeader:React.FC<Props> = ({onCategoryChanged}) => {
           <View style={styles.searchBtn}>
             <Ionicons name="search" size={24} />
             <View>
-              <Text style={{ fontFamily: 'Poppins-SemiBold' }}>Where to?</Text>
+              <Text style={{ fontFamily: 'Poppins-SemiBold', color: Colors.grey, }}>Where to?</Text>
               <Text style={{ color: Colors.grey, fontFamily: 'mon' }}>Anywhere · Any week</Text>
             </View>
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.filterBtn}>
-          <Ionicons name="options-outline" size={24} />
+          <Ionicons name="options-outline" color={Colors.grey} size={24} />
         </TouchableOpacity>
       </View>
 
@@ -120,6 +120,7 @@ const ExploreHeader:React.FC<Props> = ({onCategoryChanged}) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
+    marginTop:10,
     height: 130,
     elevation: 2,
     shadowColor: '#000',

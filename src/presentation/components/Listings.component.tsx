@@ -13,7 +13,7 @@ import ListingSkeleton from "./ListingsSkeleton.component.tsx";
 import { PostData } from "../../domain/interface/Post.interface";
 import  Colors from "../../application/utils/constants/Color.ts"
 import { Property, Type } from "../../domain/enum/post.ts";
-import { useFavorites } from "../../application/hooks/useFavorites.tsx";
+import { useFavorites } from "../../application/providers/FavoritesContext.tsx";
 
 
 const PropertyLabels: Record<Property, string> = {
@@ -56,9 +56,11 @@ interface Props {
     };
   
     const renderRow: ListRenderItem<PostData> = ({ item }) => {
-        const averageRating = item.reviews.length > 0
-        ? item.reviews.reduce((sum:number, review:any) => sum + review.rating, 0) / item.reviews.length
-        : 0;
+      const averageRating = item.reviews.length > 0
+      ? parseFloat(
+          (item.reviews.reduce((sum: number, review: any) => sum + review.rating, 0) / item.reviews.length).toFixed(1)
+        )
+      : 0;
         
       return (
       <TouchableOpacity
@@ -67,7 +69,7 @@ interface Props {
       >
         <Animated.View style={styles.listing} entering={FadeInRight} exiting={FadeOutLeft}>
           <Animated.Image
-            source={{ uri: item.images && item.images.length > 0 ? item.images[0] : 'https://placehold.co/600x400/EEE/CCC?text=Image+Non+Disponible' }}
+            source={{ uri: item.images && item.images.length > 0 ? item.images[0] as any : 'https://placehold.co/600x400/EEE/CCC?text=Image+Non+Disponible' }}
             style={styles.image}
             onError={() => handleImageError(item.id)} // Passer l'ID de l'item
           />
@@ -84,8 +86,8 @@ interface Props {
             <View style={styles.titleRatingContainer}>
               <Text style={styles.titleText}>{formatText(item.title, 25)}</Text>
               <View style={styles.ratingContainer}>
-                <Ionicons name="star" size={16} style={{ marginTop: 1 }} />
                 <Text style={styles.ratingText}> {averageRating !== 0  ? averageRating : 'N/A'} </Text> 
+                <Ionicons name="star" color={Colors.gray} size={16} style={{ marginTop: 1 }} />
               </View> 
             </View>
             <Text style={styles.propertyTypeText}>{item.property} - {item.type}</Text>
@@ -182,6 +184,8 @@ interface Props {
       fontSize: 18, // Taille de police augmentée
       fontFamily: 'Poppins-Bold', // Assurez-vous que cette police est chargée
       flex: 1, // Permet au titre de prendre l'espace disponible
+      color: Colors.grey,
+      
     },
     ratingContainer: {
       flexDirection: 'row',
@@ -190,6 +194,8 @@ interface Props {
     },
     ratingText: {
       fontFamily: 'Poppins-Bold',
+      color: Colors.grey,
+      
     },
     propertyTypeText: {
       fontFamily: 'Poppins-Medium', // Assurez-vous que cette police est chargée
@@ -204,10 +210,13 @@ interface Props {
     priceText: {
       fontFamily: 'Poppins-Bold',
       fontSize: 16,
+      color: Colors.grey,
+      
     },
     pricePeriodText: {
       fontFamily: 'Poppins-Medium',
       color: Colors.dark, // Couleur pour la période
+      
     },
     centeredMessageContainer: {
       flex: 1,

@@ -9,7 +9,7 @@ import { Picker } from '@react-native-picker/picker';
 import { StackScreenProps } from '@react-navigation/stack';
 import { launchImageLibrary, ImageLibraryOptions, Asset } from 'react-native-image-picker'; // *** Importer image-picker ***
 import { RootStackParamList } from '../../domain/types/route.types';
-import { usePostData} from '../../application/hooks/usePost';
+import { usePostData} from '../../application/providers/PostContext';
 import { Property, Type } from '../../domain/enum/post';
 import ProtectedRoute from '../../application/routes/Protected.route';
 
@@ -156,9 +156,11 @@ const DetailsAddPost: React.FC<DetailProps> = ({ navigation, route }) => {
               selectedValue={postData.property}
               onValueChange={(itemValue: string) => updatePostData('property', itemValue as keyof typeof Property)}
               style={styles.picker}
+              itemStyle={{ color: 'black' }}
+              dropdownIconColor="black"
             >
               {(Object.keys(Property) as Array<keyof typeof Property>).map((key) => (
-                <Picker.Item key={key} label={Property[key]} value={key} />
+                <Picker.Item key={key} label={Property[key]} value={key}  />
               ))}
             </Picker>
           </View>
@@ -278,6 +280,7 @@ const styles = StyleSheet.create({
   picker: {
     height: 50,
     width: '100%',
+    color: '#000'
   },
   button: {
     marginTop: 10,

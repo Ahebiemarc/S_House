@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { Property, Type } from '../../../domain/enum/post';
-import { useFavorites } from '../../../application/hooks/useFavorites';
+import { useFavorites } from '../../../application/providers/FavoritesContext';
 import { PostData } from '../../../domain/interface/Post.interface';
 
 
@@ -32,7 +32,7 @@ const Screen: React.FC = () => {
     <View style={styles.postItemContainer}>
       <View style={styles.postItem}>
         {/* Placeholder pour l'image du post */}
-          <Image source={{ uri: "https://res.cloudinary.com/dr6hkslkn/image/upload/v1743320456/gyhcazlzsysk8ocmhjif.jpg" }} style={styles.postImage} />
+          <Image source={{ uri: data.item.images[0] as any }} style={styles.postImage} />
 
         <View style={styles.postInfo}>
           <Text style={styles.postTitle}>{data.item.title}</Text>

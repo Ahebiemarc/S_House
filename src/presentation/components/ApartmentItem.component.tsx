@@ -22,8 +22,10 @@ const ApartmentItem : React.FC<Props> = ({listing, containerStyle={}, Onpress}) 
     const data = listing;
 
     const averageRating = data.reviews.length > 0
-        ? data.reviews.reduce((sum:number, review:any) => sum + review.rating, 0) / data.reviews.length
-        : 0;
+  ? parseFloat(
+      (data.reviews.reduce((sum: number, review: any) => sum + review.rating, 0) / data.reviews.length).toFixed(1)
+    )
+  : 0;
     
     console.log(data.images[0]);
     

@@ -1,6 +1,6 @@
 import { API } from './root.api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UserProfileUpdateData } from '../../domain/interface/User.interface';
+import { UserProfileUpdateData, UserProps } from '../../domain/interface/User.interface';
 import { Asset } from 'react-native-image-picker';
 
 const UserService = {
@@ -43,6 +43,18 @@ const UserService = {
     });
     return res.data;
   },
+  getUserById : async (userId: string): Promise<UserProps | null> => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const response = await API.get(`/users/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`Erreur lors de la récupération de l'utilisateur ${userId}:`, error);
+      return null;
+    }
+  }
 };
 
 export default UserService;
